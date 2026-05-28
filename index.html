@@ -706,6 +706,52 @@ footer{
   font-size:13px;color:#22c55e;font-weight:500;padding:8px;
 }
 
+
+/* ── APPEL NOVA ── */
+.call-box{
+  background:linear-gradient(135deg,rgba(232,25,44,0.08),rgba(139,92,246,0.08));
+  border:1px solid rgba(232,25,44,0.2);
+  border-radius:16px;padding:24px;margin:20px 0;
+  text-align:center;
+}
+.call-box-title{
+  font-family:'Syne',sans-serif;font-size:18px;font-weight:700;
+  margin-bottom:8px;
+}
+.call-box-sub{font-size:13px;color:var(--grey);margin-bottom:20px;line-height:1.6}
+.call-input-wrap{display:flex;gap:10px;max-width:380px;margin:0 auto 16px}
+.call-input{
+  flex:1;background:var(--dark3);border:1px solid var(--border);
+  border-radius:10px;padding:11px 14px;color:var(--white);
+  font-family:inherit;font-size:14px;outline:none;
+  transition:border-color 0.2s;
+}
+.call-input:focus{border-color:var(--red)}
+.call-input::placeholder{color:var(--grey)}
+.call-submit{
+  background:var(--red);color:white;border:none;
+  font-family:inherit;font-size:14px;font-weight:600;
+  padding:11px 20px;border-radius:10px;cursor:pointer;
+  transition:all 0.2s;white-space:nowrap;
+  display:flex;align-items:center;gap:8px;
+}
+.call-submit:hover{background:#c4111f;transform:translateY(-1px)}
+.call-submit:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.call-status{
+  font-size:13px;font-weight:500;padding:10px;
+  border-radius:8px;display:none;margin-top:10px;
+}
+.call-status.calling{
+  display:block;background:rgba(34,197,94,0.1);
+  border:1px solid rgba(34,197,94,0.3);color:#22c55e;
+  animation:lblPulse 1s ease-in-out infinite;
+}
+.call-status.error{
+  display:block;background:rgba(232,25,44,0.1);
+  border:1px solid rgba(232,25,44,0.3);color:var(--red);
+}
+.call-note{font-size:11px;color:var(--grey);margin-top:12px;opacity:0.7}
+
 </style>
 </head>
 <body>
@@ -1019,6 +1065,19 @@ footer{
           </div>
         </div>
       </div>
+
+      <!-- APPEL NOVA -->
+      <div class="call-box" style="margin-top:20px">
+        <div class="call-box-title">📞 NOVA vous rappelle</div>
+        <div class="call-box-sub">Entrez votre numéro français et NOVA vous appellera dans les secondes qui suivent.</div>
+        <div class="call-input-wrap">
+          <input class="call-input" type="tel" id="callNumber" placeholder="06 12 34 56 78"/>
+          <button class="call-submit" id="callBtn" onclick="initiateCall()">📞 M'appeler</button>
+        </div>
+        <div class="call-status" id="callStatus"></div>
+        <div class="call-note">⚠️ Mode trial Twilio — uniquement vers les numéros vérifiés</div>
+      </div>
+
     </div>
   </div>
 
@@ -1497,6 +1556,49 @@ function checkForGoodbye(text){
   ];
   var lower = text.toLowerCase();
   return goodbyeWords.some(function(w){ return lower.includes(w); });
+}
+
+
+// ── APPEL NOVA ──
+async function initiateCall(){
+  var num = document.getElementById('callNumber').value.trim();
+  if(!num){ alert('Veuillez entrer un numéro de téléphone.'); return; }
+
+  var btn = document.getElementById('callBtn');
+  var status = document.getElementById('callStatus');
+  btn.disabled = true;
+  btn.textContent = '⏳ Connexion...';
+  status.className = 'call-status';
+  status.style.display = 'none';
+
+  try {
+    var r = await fetch('/api/call', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ phoneNumber: num })
+    });
+    var d = await r.json();
+
+    if(d.success){
+      status.className = 'call-status calling';
+      status.textContent = '📞 NOVA vous appelle... Décrochez dans quelques secondes !';
+      btn.textContent = '✅ Appel lancé';
+      setTimeout(function(){
+        btn.disabled = false;
+        btn.innerHTML = '📞 M'appeler';
+      }, 30000);
+    } else {
+      status.className = 'call-status error';
+      status.textContent = '❌ ' + (d.error || 'Erreur lors de l'appel');
+      btn.disabled = false;
+      btn.innerHTML = '📞 M'appeler';
+    }
+  } catch(e) {
+    status.className = 'call-status error';
+    status.textContent = '❌ Erreur de connexion. Réessayez.';
+    btn.disabled = false;
+    btn.innerHTML = '📞 M'appeler';
+  }
 }
 
 </script>
