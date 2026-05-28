@@ -1589,7 +1589,7 @@ async function initiateCall(){
       }, 30000);
     } else {
       status.className = 'call-status error';
-      status.textContent = '❌ ' + (d.error || "Erreur lors de l'appel");
+      status.textContent = "❌ " + (d.error || "Erreur");
       btn.disabled = false;
       btn.innerHTML = "📞 M appeler";
     }
