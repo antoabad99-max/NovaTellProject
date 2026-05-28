@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NovaTel — Connectés à votre rythme</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --nova-red:#E8192C;
+  --nova-cyan:#00F5FF;
+  --nova-purple:#8B5CF6;
+  --nova-dark:#050810;
+  --nova-dark2:#0A0F1E;
+  --nova-dark3:#111827;
+  --nova-dark4:#1F2937;
+  --nova-white:#F8FAFC;
+  --nova-grey:#94A3B8;
+  --nova-border:rgba(255,255,255,0.08);
+  --grad1:linear-gradient(135deg,#E8192C,#8B5CF6);
+  --grad2:linear-gradient(135deg,#00F5FF,#8B5CF6);
+}
+
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--nova-dark);color:var(--nova-white);overflow-x:hidden}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--nova-red);border-radius:2px}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(5,8,16,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--nova-border);
+  padding:0 40px;
+  height:68px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+
+.nav-logo{
+  font-family:'Syne',sans-serif;
+  font-size:22px;font-weight:800;
+  background:var(--grad1);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:2px;
+}
+
+.nav-links{display:flex;gap:8px;align-items:center}
+.nav-link{
+  background:none;border:none;
+  color:var(--nova-grey);font-family:'Inter',sans-serif;font-size:14px;
+  padding:8px 16px;border-radius:8px;cursor:pointer;
+  transition:all 0.2s;
+}
+.nav-link:hover,.nav-link.active{color:var(--nova-white);background:rgba(255,255,255,0.06)}
+.nav-cta{
+  background:var(--nova-red);color:white;border:none;
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:600;
+  padding:9px 20px;border-radius:10px;cursor:pointer;
+  transition:all 0.2s;
+}
+.nav-cta:hover{background:#c4111f;transform:translateY(-1px)}
+
+/* ── PAGES ── */
+.page{display:none;min-height:100vh;padding-top:68px}
+.page.active{display:block}
+
+/* ═══════════════════════════════════
+   PAGE ACCUEIL
+═══════════════════════════════════ */
+.hero{
+  min-height:calc(100vh - 68px);
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;
+  padding:60px 40px;
+  position:relative;
+  overflow:hidden;
+}
+
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(232,25,44,0.15), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(139,92,246,0.12), transparent),
+    radial-gradient(ellipse 40% 30% at 10% 60%, rgba(0,245,255,0.08), transparent);
+}
+
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+}
+
+.hero-content{position:relative;z-index:1;max-width:800px}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(232,25,44,0.12);
+  border:1px solid rgba(232,25,44,0.3);
+  border-radius:20px;padding:6px 16px;
+  font-size:12px;font-weight:500;color:var(--nova-red);
+  margin-bottom:32px;letter-spacing:1px;
+}
+
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--nova-red);border-radius:50%;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+h1{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(42px,6vw,80px);
+  font-weight:800;line-height:1.05;
+  letter-spacing:-2px;
+  margin-bottom:24px;
+}
+
+.h1-grad{background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.h1-cyan{background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+.hero-sub{
+  font-size:18px;color:var(--nova-grey);
+  line-height:1.7;max-width:560px;margin:0 auto 40px;
+}
+
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+.btn-primary{
+  background:var(--nova-red);color:white;border:none;
+  font-family:'Inter',sans-serif;font-size:15px;font-weight:600;
+  padding:14px 32px;border-radius:12px;cursor:pointer;
+  transition:all 0.25s;letter-spacing:0.3px;
+}
+.btn-primary:hover{background:#c4111f;transform:translateY(-2px);box-shadow:0 8px 30px rgba(232,25,44,0.35)}
+
+.btn-outline{
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.2);
+  color:var(--nova-white);
+  font-family:'Inter',sans-serif;font-size:15px;font-weight:500;
+  padding:14px 32px;border-radius:12px;cursor:pointer;
+  transition:all 0.25s;
+}
+.btn-outline:hover{border-color:var(--nova-cyan);color:var(--nova-cyan);transform:translateY(-2px)}
+
+/* Stats */
+.stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--nova-border);
+  border:1px solid var(--nova-border);border-radius:16px;
+  margin:80px 40px 0;overflow:hidden;
+}
+.stat{
+  background:var(--nova-dark2);
+  padding:32px;text-align:center;
+}
+.stat-num{
+  font-family:'Syne',sans-serif;
+  font-size:42px;font-weight:800;
+  background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.stat-label{font-size:13px;color:var(--nova-grey);margin-top:6px;letter-spacing:0.5px}
+
+/* Features */
+.section{padding:100px 40px;max-width:1100px;margin:0 auto}
+.section-tag{
+  font-family:'DM Mono',monospace;font-size:12px;
+  color:var(--nova-cyan);letter-spacing:3px;margin-bottom:16px;
+}
+.section-title{
+  font-family:'Syne',sans-serif;font-size:clamp(28px,4vw,48px);
+  font-weight:800;letter-spacing:-1px;margin-bottom:16px;
+}
+.section-sub{font-size:16px;color:var(--nova-grey);max-width:500px;line-height:1.7}
+
+.features-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;margin-top:60px;
+}
+
+.feat-card{
+  background:var(--nova-dark2);
+  border:1px solid var(--nova-border);
+  border-radius:16px;padding:28px;
+  transition:all 0.3s;position:relative;overflow:hidden;
+}
+.feat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:var(--grad1);opacity:0;transition:opacity 0.3s;
+}
+.feat-card:hover{border-color:rgba(232,25,44,0.3);transform:translateY(-4px)}
+.feat-card:hover::before{opacity:1}
+
+.feat-icon{
+  width:44px;height:44px;
+  background:rgba(232,25,44,0.12);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;margin-bottom:20px;
+}
+.feat-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:10px}
+.feat-desc{font-size:14px;color:var(--nova-grey);line-height:1.7}
+
+/* ═══════════════════════════════════
+   PAGE OFFRES
+═══════════════════════════════════ */
+.page-hero{
+  padding:80px 40px 60px;
+  text-align:center;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(139,92,246,0.15), transparent);
+}
+
+.offers-tabs{
+  display:flex;gap:8px;justify-content:center;
+  margin:40px 0 60px;
+}
+.offer-tab{
+  background:var(--nova-dark3);border:1px solid var(--nova-border);
+  color:var(--nova-grey);font-family:'Inter',sans-serif;font-size:14px;font-weight:500;
+  padding:10px 24px;border-radius:10px;cursor:pointer;transition:all 0.2s;
+}
+.offer-tab.active,.offer-tab:hover{
+  background:var(--nova-red);border-color:var(--nova-red);color:white;
+}
+
+.offers-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:20px;max-width:1000px;margin:0 auto;padding:0 40px 80px;
+}
+
+.offer-card{
+  background:var(--nova-dark2);
+  border:1px solid var(--nova-border);
+  border-radius:20px;padding:32px;
+  position:relative;transition:all 0.3s;
+}
+.offer-card.featured{
+  border-color:var(--nova-red);
+  background:linear-gradient(135deg,rgba(232,25,44,0.08),var(--nova-dark2));
+}
+.offer-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+
+.offer-badge{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--nova-red);color:white;
+  font-size:11px;font-weight:600;letter-spacing:1px;
+  padding:4px 16px;border-radius:20px;white-space:nowrap;
+}
+.offer-name{
+  font-family:'Syne',sans-serif;font-size:22px;font-weight:800;
+  margin-bottom:8px;
+}
+.offer-price{
+  font-family:'Syne',sans-serif;margin:20px 0;
+}
+.offer-price span:first-child{font-size:48px;font-weight:800;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.offer-price span:last-child{font-size:14px;color:var(--nova-grey)}
+.offer-features{list-style:none;margin:20px 0;display:flex;flex-direction:column;gap:10px}
+.offer-features li{font-size:14px;color:var(--nova-grey);display:flex;align-items:center;gap:10px}
+.offer-features li::before{content:'✓';color:var(--nova-cyan);font-weight:700;flex-shrink:0}
+.offer-btn{
+  width:100%;background:var(--nova-red);color:white;border:none;
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:600;
+  padding:12px;border-radius:10px;cursor:pointer;transition:all 0.2s;margin-top:12px;
+}
+.offer-btn:hover{background:#c4111f}
+
+/* ═══════════════════════════════════
+   PAGE ASSISTANCE
+═══════════════════════════════════ */
+.assistance-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:20px;max-width:900px;margin:0 auto;padding:0 40px 60px;
+}
+.assist-card{
+  background:var(--nova-dark2);border:1px solid var(--nova-border);
+  border-radius:16px;padding:32px;cursor:pointer;transition:all 0.3s;
+}
+.assist-card:hover{border-color:rgba(0,245,255,0.3);transform:translateY(-3px)}
+.assist-icon{font-size:36px;margin-bottom:16px}
+.assist-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px}
+.assist-desc{font-size:14px;color:var(--nova-grey);line-height:1.7}
+.assist-link{
+  display:inline-flex;align-items:center;gap:6px;
+  color:var(--nova-cyan);font-size:13px;font-weight:500;
+  margin-top:16px;cursor:pointer;
+}
+
+/* FAQ */
+.faq{max-width:700px;margin:0 auto;padding:0 40px 80px}
+.faq-item{
+  border-bottom:1px solid var(--nova-border);
+  padding:20px 0;cursor:pointer;
+}
+.faq-q{
+  font-size:15px;font-weight:500;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.faq-icon{color:var(--nova-red);font-size:20px;transition:transform 0.2s;flex-shrink:0}
+.faq-a{
+  font-size:14px;color:var(--nova-grey);line-height:1.7;
+  max-height:0;overflow:hidden;transition:all 0.3s;margin-top:0;
+}
+.faq-item.open .faq-a{max-height:200px;margin-top:12px}
+.faq-item.open .faq-icon{transform:rotate(45deg)}
+
+/* ═══════════════════════════════════
+   PAGE ESPACE CLIENT
+═══════════════════════════════════ */
+.client-wrapper{
+  max-width:900px;margin:0 auto;padding:40px 40px 80px;
+}
+
+/* Login */
+.login-box{
+  max-width:420px;margin:0 auto;
+  background:var(--nova-dark2);border:1px solid var(--nova-border);
+  border-radius:20px;padding:40px;
+}
+.login-logo{
+  text-align:center;margin-bottom:32px;
+  font-family:'Syne',sans-serif;font-size:28px;font-weight:800;
+  background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.form-group{margin-bottom:20px}
+.form-label{font-size:13px;font-weight:500;color:var(--nova-grey);margin-bottom:8px;display:block}
+.form-input{
+  width:100%;background:var(--nova-dark3);
+  border:1px solid var(--nova-border);border-radius:10px;
+  padding:12px 16px;color:var(--nova-white);
+  font-family:'Inter',sans-serif;font-size:14px;outline:none;
+  transition:border-color 0.2s;
+}
+.form-input:focus{border-color:var(--nova-red)}
+.login-btn{
+  width:100%;background:var(--nova-red);color:white;border:none;
+  font-family:'Inter',sans-serif;font-size:15px;font-weight:600;
+  padding:14px;border-radius:10px;cursor:pointer;transition:all 0.2s;margin-top:8px;
+}
+.login-btn:hover{background:#c4111f}
+.login-hint{text-align:center;font-size:12px;color:var(--nova-grey);margin-top:16px}
+.login-hint span{color:var(--nova-cyan);cursor:pointer}
+
+/* Dashboard */
+.dashboard{display:none}
+.dash-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:32px;
+}
+.dash-welcome{font-family:'Syne',sans-serif;font-size:26px;font-weight:800}
+.dash-welcome span{background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logout-btn{
+  background:transparent;border:1px solid var(--nova-border);
+  color:var(--nova-grey);font-family:'Inter',sans-serif;font-size:13px;
+  padding:8px 16px;border-radius:8px;cursor:pointer;transition:all 0.2s;
+}
+.logout-btn:hover{border-color:var(--nova-red);color:var(--nova-red)}
+
+.dash-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.dash-card{
+  background:var(--nova-dark2);border:1px solid var(--nova-border);
+  border-radius:14px;padding:24px;
+}
+.dash-card-label{font-size:12px;color:var(--nova-grey);letter-spacing:0.5px;margin-bottom:8px}
+.dash-card-val{font-family:'Syne',sans-serif;font-size:24px;font-weight:800}
+.dash-card-sub{font-size:12px;color:var(--nova-grey);margin-top:4px}
+
+.dash-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
+.dash-box{
+  background:var(--nova-dark2);border:1px solid var(--nova-border);
+  border-radius:14px;padding:24px;
+}
+.dash-box-title{
+  font-family:'Syne',sans-serif;font-size:16px;font-weight:700;
+  margin-bottom:20px;display:flex;align-items:center;gap:8px;
+}
+.invoice-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 0;border-bottom:1px solid var(--nova-border);font-size:14px;
+}
+.invoice-row:last-child{border-bottom:none}
+.invoice-row span:last-child{font-weight:600}
+.badge-ok{background:rgba(34,197,94,0.15);color:#22c55e;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-wait{background:rgba(234,179,8,0.15);color:#eab308;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+
+.conso-bar{margin-top:8px}
+.conso-label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px}
+.conso-label span:last-child{color:var(--nova-grey)}
+.conso-track{height:8px;background:var(--nova-dark3);border-radius:4px;overflow:hidden}
+.conso-fill{height:100%;border-radius:4px;background:var(--grad1);transition:width 1s ease}
+
+.dash-actions{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.dash-action-btn{
+  background:var(--nova-dark3);border:1px solid var(--nova-border);
+  color:var(--nova-white);font-family:'Inter',sans-serif;font-size:13px;
+  padding:12px 16px;border-radius:10px;cursor:pointer;
+  text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:10px;
+}
+.dash-action-btn:hover{border-color:var(--nova-cyan);color:var(--nova-cyan)}
+
+/* ═══════════════════════════════════
+   PAGE CHATBOT
+═══════════════════════════════════ */
+.chatbot-page{
+  max-width:600px;margin:0 auto;padding:40px 20px 80px;
+}
+.chatbot-header{text-align:center;margin-bottom:40px}
+
+.chat-container{
+  background:var(--nova-dark2);
+  border:1px solid var(--nova-border);
+  border-radius:20px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,0.5);
+}
+
+.chat-top{
+  background:var(--nova-dark3);
+  border-bottom:1px solid var(--nova-border);
+  padding:16px 20px;
+  display:flex;align-items:center;gap:14px;
+}
+.chat-avatar{
+  width:42px;height:42px;
+  background:transparent;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;flex-shrink:0;
+}
+.chat-avatar::after{
+  content:'';position:absolute;bottom:0px;right:0px;
+  width:10px;height:10px;background:#22c55e;
+  border-radius:50%;border:2px solid var(--nova-dark3);
+  z-index:2;
+}
+.nova-n{
+  width:42px;height:42px;
+  display:flex;align-items:center;justify-content:center;
+}
+.nova-n svg{
+  width:38px;height:38px;
+  animation:nSpin 3s ease-in-out infinite;
+}
+.nova-n.thinking svg{
+  animation:nSpin 0.7s ease-in-out infinite;
+}
+@keyframes nSpin{
+  0%{transform:rotateY(0deg) scale(1);filter:drop-shadow(0 0 3px #E8192C)}
+  25%{transform:rotateY(18deg) scale(1.06);filter:drop-shadow(0 0 8px #8B5CF6)}
+  50%{transform:rotateY(0deg) scale(1);filter:drop-shadow(0 0 3px #E8192C)}
+  75%{transform:rotateY(-18deg) scale(1.06);filter:drop-shadow(0 0 8px #00F5FF)}
+  100%{transform:rotateY(0deg) scale(1);filter:drop-shadow(0 0 3px #E8192C)}
+}
+.chat-info h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700}
+.chat-info p{font-size:11px;color:var(--nova-grey);margin-top:2px}
+.chat-brand{
+  margin-left:auto;font-family:'DM Mono',monospace;
+  font-size:10px;color:var(--nova-red);letter-spacing:2px;opacity:0.7;
+}
+
+.chat-messages{
+  height:420px;overflow-y:auto;
+  padding:20px 16px;
+  display:flex;flex-direction:column;gap:12px;
+  scrollbar-width:thin;scrollbar-color:var(--nova-border) transparent;
+}
+
+.c-msg{display:flex;flex-direction:column;max-width:82%;animation:msgIn 0.3s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.c-msg.nova{align-self:flex-start}
+.c-msg.user{align-self:flex-end}
+
+.c-bubble{
+  padding:12px 16px;border-radius:16px;
+  font-size:13.5px;line-height:1.65;
+}
+.nova .c-bubble{
+  background:var(--nova-dark3);color:var(--nova-white);
+  border:1px solid var(--nova-border);
+  border-radius:4px 16px 16px 16px;
+}
+.user .c-bubble{
+  background:var(--nova-red);color:white;
+  border-radius:16px 16px 4px 16px;
+}
+.c-time{font-size:10px;color:var(--nova-grey);margin-top:4px;padding:0 4px}
+.nova .c-time{align-self:flex-start}
+.user .c-time{align-self:flex-end}
+
+.typing-ind{
+  display:flex;align-items:center;gap:4px;
+  padding:14px 16px;
+  background:var(--nova-dark3);border:1px solid var(--nova-border);
+  border-radius:4px 16px 16px 16px;width:fit-content;
+  animation:msgIn 0.3s ease;
+}
+.typing-ind span{
+  width:6px;height:6px;background:var(--nova-grey);border-radius:50%;
+  animation:tdot 1.2s infinite;
+}
+.typing-ind span:nth-child(2){animation-delay:0.2s}
+.typing-ind span:nth-child(3){animation-delay:0.4s}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:0.4}30%{transform:translateY(-5px);opacity:1}}
+
+.chat-qr{
+  padding:10px 16px 14px;
+  display:flex;flex-wrap:wrap;gap:8px;
+  border-top:1px solid var(--nova-border);
+  background:rgba(0,0,0,0.2);
+}
+.c-qr-btn{
+  background:transparent;border:1px solid rgba(232,25,44,0.4);
+  color:rgba(232,25,44,0.9);
+  font-family:'Inter',sans-serif;font-size:12px;font-weight:500;
+  padding:6px 14px;border-radius:20px;cursor:pointer;transition:all 0.2s;
+  white-space:nowrap;
+}
+.c-qr-btn:hover{background:var(--nova-red);border-color:var(--nova-red);color:white}
+
+.chat-input-area{
+  border-top:1px solid var(--nova-border);
+  padding:14px 16px;
+  display:flex;gap:10px;align-items:flex-end;
+  background:var(--nova-dark3);
+}
+.chat-input-wrap{
+  flex:1;background:var(--nova-dark);
+  border:1px solid var(--nova-border);border-radius:12px;
+  padding:10px 14px;transition:border-color 0.2s;
+}
+.chat-input-wrap:focus-within{border-color:var(--nova-red)}
+.chat-textarea{
+  width:100%;background:transparent;border:none;outline:none;
+  color:var(--nova-white);font-family:'Inter',sans-serif;font-size:13.5px;
+  resize:none;max-height:80px;min-height:20px;line-height:1.5;
+}
+.chat-textarea::placeholder{color:var(--nova-grey)}
+.chat-send{
+  width:40px;height:40px;background:var(--nova-red);border:none;
+  border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all 0.2s;
+}
+.chat-send:hover{background:#c4111f;transform:scale(1.05)}
+.chat-send:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.chat-send svg{width:18px;height:18px;fill:white}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--nova-dark2);
+  border-top:1px solid var(--nova-border);
+  padding:40px;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:16px;
+}
+.footer-logo{
+  font-family:'Syne',sans-serif;font-size:18px;font-weight:800;
+  background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.footer-copy{font-size:13px;color:var(--nova-grey)}
+.footer-links{display:flex;gap:20px}
+.footer-links a{font-size:13px;color:var(--nova-grey);text-decoration:none;transition:color 0.2s}
+.footer-links a:hover{color:var(--nova-cyan)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  nav{padding:0 20px}
+  .hero{padding:40px 20px}
+  .stats{grid-template-columns:1fr;margin:40px 20px 0}
+  .features-grid{grid-template-columns:1fr;padding:0 20px}
+  .offers-grid{grid-template-columns:1fr;padding:0 20px}
+  .assistance-grid{grid-template-columns:1fr;padding:0 20px}
+  .dash-cards{grid-template-columns:1fr}
+  .dash-grid{grid-template-columns:1fr}
+  .section{padding:60px 20px}
+  footer{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-logo">NOVATELL</div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showPage('accueil')">Accueil</button>
+    <button class="nav-link" onclick="showPage('offres')">Offres</button>
+    <button class="nav-link" onclick="showPage('assistance')">Assistance</button>
+    <button class="nav-link" onclick="showPage('client')">Espace Client</button>
+    <button class="nav-link" onclick="showPage('chatbot')">NOVA IA</button>
+    <button class="nav-cta" onclick="showPage('client')">Connexion</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════
+     PAGE ACCUEIL
+══════════════════════════════════ -->
+<div class="page active" id="page-accueil">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="hero-badge">✦ Réseau 5G Ultra · Disponible maintenant</div>
+      <h1>
+        L'opérateur qui<br>
+        <span class="h1-grad">pense différent</span><br>
+        <span class="h1-cyan">connecte mieux</span>
+      </h1>
+      <p class="hero-sub">NovaTel réinvente votre expérience télécom avec une IA de pointe, un réseau ultra-performant et un service client disponible 24h/24.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="showPage('offres')">Découvrir nos offres</button>
+        <button class="btn-outline" onclick="showPage('chatbot')">Parler à NOVA IA →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num">99,8%</div><div class="stat-label">COUVERTURE NATIONALE</div></div>
+    <div class="stat"><div class="stat-num">2 Gbit/s</div><div class="stat-label">DÉBIT FIBRE MAX</div></div>
+    <div class="stat"><div class="stat-num">24/7</div><div class="stat-label">ASSISTANCE IA NOVA</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-tag">// POURQUOI NOVATELL</div>
+    <div class="section-title">Une expérience télécom<br>réinventée</div>
+    <p class="section-sub">Technologie de pointe, transparence totale et service client propulsé par l'intelligence artificielle.</p>
+    <div class="features-grid">
+      <div class="feat-card"><div class="feat-icon">⚡</div><div class="feat-title">5G Ultra</div><div class="feat-desc">Jusqu'à 2 Gbit/s en débit descendant. Latence inférieure à 1 ms pour une expérience sans friction.</div></div>
+      <div class="feat-card"><div class="feat-icon">🤖</div><div class="feat-title">NOVA IA 24/7</div><div class="feat-desc">Notre assistant IA résout 85% des problèmes instantanément, à toute heure, sans temps d'attente.</div></div>
+      <div class="feat-card"><div class="feat-icon">🛡️</div><div class="feat-title">Sans engagement</div><div class="feat-desc">Tous nos forfaits sont sans engagement. Changez ou résiliez quand vous voulez, sans frais cachés.</div></div>
+      <div class="feat-card"><div class="feat-icon">🌍</div><div class="feat-title">Roaming Europe</div><div class="feat-desc">Utilisez votre forfait dans toute l'Europe sans surcoût. Même débit, même qualité, même prix.</div></div>
+      <div class="feat-card"><div class="feat-icon">📊</div><div class="feat-title">Tableau de bord</div><div class="feat-desc">Suivez votre consommation en temps réel, gérez vos options et vos factures depuis l'app NovaTel.</div></div>
+      <div class="feat-card"><div class="feat-icon">🔒</div><div class="feat-title">Sécurité avancée</div><div class="feat-desc">Protection anti-spam, filtrage des appels indésirables et chiffrement de vos communications.</div></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">NOVATELL</div>
+    <div class="footer-copy">© 2026 NovaTel — Connectés à votre rythme</div>
+    <div class="footer-links">
+      <a href="#">Mentions légales</a>
+      <a href="#">CGU</a>
+      <a href="#">RGPD</a>
+      <a href="#">Contact</a>
+    </div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE OFFRES
+══════════════════════════════════ -->
+<div class="page" id="page-offres">
+  <div class="page-hero">
+    <div class="section-tag" style="text-align:center">// NOS OFFRES</div>
+    <div class="section-title">Des forfaits taillés<br>pour votre usage</div>
+    <p class="section-sub" style="margin:16px auto 0;text-align:center">Sans engagement, sans surprise. Changez d'offre à tout moment.</p>
+  </div>
+
+  <div class="offers-tabs">
+    <button class="offer-tab active" onclick="switchOffers('mobile',this)">📱 Mobile</button>
+    <button class="offer-tab" onclick="switchOffers('fixe',this)">🏠 Internet Fixe</button>
+  </div>
+
+  <div class="offers-grid" id="offers-mobile">
+    <div class="offer-card">
+      <div class="offer-name">Essentiel</div>
+      <div class="offer-price"><span>9,99€</span><span>/mois</span></div>
+      <ul class="offer-features">
+        <li>Appels & SMS illimités</li>
+        <li>50 Go en France</li>
+        <li>10 Go Europe</li>
+        <li>4G incluse</li>
+      </ul>
+      <button class="offer-btn" onclick="showPage('client')">Choisir cette offre</button>
+    </div>
+    <div class="offer-card featured">
+      <div class="offer-badge">⭐ POPULAIRE</div>
+      <div class="offer-name">Confort</div>
+      <div class="offer-price"><span>19,99€</span><span>/mois</span></div>
+      <ul class="offer-features">
+        <li>Appels & SMS illimités</li>
+        <li>150 Go en France</li>
+        <li>30 Go Europe</li>
+        <li>4G/5G incluse</li>
+        <li>Hotspot Wi-Fi</li>
+      </ul>
+      <button class="offer-btn" onclick="showPage('client')">Choisir cette offre</button>
+    </div>
+    <div class="offer-card">
+      <div class="offer-name">Premium</div>
+      <div class="offer-price"><span>29,99€</span><span>/mois</span></div>
+      <ul class="offer-features">
+        <li>Appels & SMS illimités</li>
+        <li>300 Go en France</li>
+        <li>60 Go Europe</li>
+        <li>5G Ultra incluse</li>
+        <li>Hotspot Wi-Fi</li>
+        <li>Priorité réseau</li>
+      </ul>
+      <button class="offer-btn" onclick="showPage('client')">Choisir cette offre</button>
+    </div>
+  </div>
+
+  <div class="offers-grid" id="offers-fixe" style="display:none">
+    <div class="offer-card" style="grid-column:1/2">
+      <div class="offer-name">Box Standard</div>
+      <div class="offer-price"><span>24,99€</span><span>/mois</span></div>
+      <ul class="offer-features">
+        <li>Fibre jusqu'à 500 Mbit/s</li>
+        <li>TV incluse (100 chaînes)</li>
+        <li>Appels fixes illimités</li>
+        <li>Wi-Fi 6 inclus</li>
+      </ul>
+      <button class="offer-btn" onclick="showPage('client')">Choisir cette offre</button>
+    </div>
+    <div class="offer-card featured" style="grid-column:2/3">
+      <div class="offer-badge">⚡ MEILLEURE OFFRE</div>
+      <div class="offer-name">Box Ultra</div>
+      <div class="offer-price"><span>39,99€</span><span>/mois</span></div>
+      <ul class="offer-features">
+        <li>Fibre jusqu'à 2 Gbit/s</li>
+        <li>TV 4K incluse (200 chaînes)</li>
+        <li>Appels fixes illimités</li>
+        <li>Wi-Fi 6E inclus</li>
+        <li>NovaTel Backup 4G</li>
+      </ul>
+      <button class="offer-btn" onclick="showPage('client')">Choisir cette offre</button>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">NOVATELL</div>
+    <div class="footer-copy">© 2026 NovaTel — Connectés à votre rythme</div>
+    <div class="footer-links"><a href="#">Mentions légales</a><a href="#">CGU</a><a href="#">RGPD</a></div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE ASSISTANCE
+══════════════════════════════════ -->
+<div class="page" id="page-assistance">
+  <div class="page-hero">
+    <div class="section-tag" style="text-align:center">// ASSISTANCE</div>
+    <div class="section-title">Comment pouvons-nous<br>vous aider ?</div>
+  </div>
+
+  <div class="assistance-grid">
+    <div class="assist-card" onclick="showPage('chatbot')">
+      <div class="assist-icon">🤖</div>
+      <div class="assist-title">NOVA — Assistant IA</div>
+      <div class="assist-desc">Disponible 24h/24, 7j/7. Résout instantanément pannes, factures, offres et problèmes techniques.</div>
+      <div class="assist-link">Démarrer une conversation →</div>
+    </div>
+    <div class="assist-card">
+      <div class="assist-icon">📞</div>
+      <div class="assist-title">Assistance téléphonique</div>
+      <div class="assist-desc">Parlez à un conseiller humain du lundi au samedi de 8h à 20h.</div>
+      <div class="assist-link">Appeler le 3266 →</div>
+    </div>
+    <div class="assist-card">
+      <div class="assist-icon">💬</div>
+      <div class="assist-title">Chat en direct</div>
+      <div class="assist-desc">Échangez par écrit avec un conseiller NovaTel. Temps de réponse moyen : 3 minutes.</div>
+      <div class="assist-link">Ouvrir le chat →</div>
+    </div>
+    <div class="assist-card">
+      <div class="assist-icon">📧</div>
+      <div class="assist-title">Email & courrier</div>
+      <div class="assist-desc">Pour les demandes non urgentes. Réponse garantie sous 24h ouvrées.</div>
+      <div class="assist-link">Envoyer un email →</div>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top:0">
+    <div class="section-tag">// FAQ</div>
+    <div class="section-title" style="font-size:28px">Questions fréquentes</div>
+  </div>
+
+  <div class="faq">
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Comment résilier mon contrat NovaTel ?<span class="faq-icon">+</span></div>
+      <div class="faq-a">Vous pouvez résilier votre contrat à tout moment sans frais depuis votre espace client, par téléphone au 3266 ou en parlant à NOVA notre assistant IA. La résiliation prend effet sous 10 jours.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Ma box ne fonctionne plus, que faire ?<span class="faq-icon">+</span></div>
+      <div class="faq-a">En premier lieu, débranchez votre box 30 secondes puis rebranchez-la. Si le problème persiste, contactez NOVA notre assistant IA qui peut diagnostiquer et résoudre la plupart des pannes en temps réel.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Comment lire ma facture NovaTel ?<span class="faq-icon">+</span></div>
+      <div class="faq-a">Toutes vos factures sont disponibles dans votre espace client rubrique "Facturation". Chaque facture détaille votre abonnement, vos options et tout frais supplémentaire éventuel.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Puis-je garder mon numéro en changeant d'opérateur ?<span class="faq-icon">+</span></div>
+      <div class="faq-a">Oui, la portabilité du numéro est gratuite et obligatoire. Lors de votre souscription chez NovaTel, communiquez simplement votre RIO (disponible en composant le 3179 chez votre opérateur actuel).</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">NovaTel couvre-t-il ma zone géographique ?<span class="faq-icon">+</span></div>
+      <div class="faq-a">NovaTel couvre 99,8% de la population française en 4G et 78% en 5G. Consultez notre carte de couverture interactive sur notre site ou demandez à NOVA de vérifier votre adresse.</div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">NOVATELL</div>
+    <div class="footer-copy">© 2026 NovaTel — Connectés à votre rythme</div>
+    <div class="footer-links"><a href="#">Mentions légales</a><a href="#">CGU</a><a href="#">RGPD</a></div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE ESPACE CLIENT
+══════════════════════════════════ -->
+<div class="page" id="page-client">
+  <div class="client-wrapper">
+
+    <!-- Login -->
+    <div id="login-form">
+      <div class="login-box">
+        <div class="login-logo">NOVATELL</div>
+        <div class="form-group">
+          <label class="form-label">Email ou numéro client</label>
+          <input class="form-input" type="text" placeholder="exemple@email.com" id="loginEmail"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <input class="form-input" type="password" placeholder="••••••••" id="loginPass"/>
+        </div>
+        <button class="login-btn" onclick="doLogin()">Se connecter</button>
+        <div class="login-hint">Pas encore client ? <span onclick="showPage('offres')">Découvrir nos offres</span></div>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+      <div class="dash-header">
+        <div class="dash-welcome">Bonjour, <span>Thomas</span> 👋</div>
+        <button class="logout-btn" onclick="doLogout()">Déconnexion</button>
+      </div>
+
+      <div class="dash-cards">
+        <div class="dash-card">
+          <div class="dash-card-label">FORFAIT ACTUEL</div>
+          <div class="dash-card-val" style="font-size:18px;color:var(--nova-red)">Confort 5G</div>
+          <div class="dash-card-sub">Renouvellement le 01/07/2026</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-label">PROCHAINE FACTURE</div>
+          <div class="dash-card-val">19,99€</div>
+          <div class="dash-card-sub">Prélèvement le 05/06/2026</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-label">NUMÉRO CLIENT</div>
+          <div class="dash-card-val" style="font-size:18px;font-family:'DM Mono',monospace">#NT-48291</div>
+          <div class="dash-card-sub">Compte vérifié ✓</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-box">
+          <div class="dash-box-title">📊 Consommation ce mois</div>
+          <div class="conso-bar">
+            <div class="conso-label"><span>Data mobile</span><span>87 Go / 150 Go</span></div>
+            <div class="conso-track"><div class="conso-fill" style="width:58%"></div></div>
+          </div>
+          <div class="conso-bar" style="margin-top:20px">
+            <div class="conso-label"><span>Appels</span><span>4h32 / Illimité</span></div>
+            <div class="conso-track"><div class="conso-fill" style="width:30%;background:var(--grad2)"></div></div>
+          </div>
+          <div class="conso-bar" style="margin-top:20px">
+            <div class="conso-label"><span>SMS</span><span>142 / Illimité</span></div>
+            <div class="conso-track"><div class="conso-fill" style="width:15%;background:linear-gradient(135deg,#00F5FF,#22c55e)"></div></div>
+          </div>
+
+          <div class="dash-box-title" style="margin-top:28px">🧾 Dernières factures</div>
+          <div class="invoice-row"><span>Mai 2026</span><span>19,99€</span><span class="badge-ok">Payée</span></div>
+          <div class="invoice-row"><span>Avril 2026</span><span>19,99€</span><span class="badge-ok">Payée</span></div>
+          <div class="invoice-row"><span>Mars 2026</span><span>23,50€</span><span class="badge-ok">Payée</span></div>
+        </div>
+
+        <div class="dash-box">
+          <div class="dash-box-title">⚡ Actions rapides</div>
+          <div class="dash-actions">
+            <button class="dash-action-btn" onclick="showPage('chatbot')">🤖 Parler à NOVA IA</button>
+            <button class="dash-action-btn" onclick="showPage('offres')">📱 Changer d'offre</button>
+            <button class="dash-action-btn">🧾 Télécharger une facture</button>
+            <button class="dash-action-btn">📍 Suivre ma commande</button>
+            <button class="dash-action-btn">🔑 Modifier mon mot de passe</button>
+            <button class="dash-action-btn" onclick="showPage('chatbot')">❌ Demander une résiliation</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">NOVATELL</div>
+    <div class="footer-copy">© 2026 NovaTel — Connectés à votre rythme</div>
+    <div class="footer-links"><a href="#">Mentions légales</a><a href="#">CGU</a><a href="#">RGPD</a></div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE CHATBOT
+══════════════════════════════════ -->
+<div class="page" id="page-chatbot">
+  <div class="chatbot-page">
+    <div class="chatbot-header">
+      <div class="section-tag" style="text-align:center">// ASSISTANT IA</div>
+      <div class="section-title" style="font-size:32px">Parlez à <span style="background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent">NOVA</span></div>
+      <p style="color:var(--nova-grey);font-size:14px;margin-top:8px">Disponible 24h/24 · Répond en quelques secondes</p>
+    </div>
+
+    <div class="chat-container">
+      <div class="chat-top">
+        <div class="chat-avatar"><div class="nova-n" id="novaN"><svg viewBox="-50 -70 100 140" fill="none">
+        <defs>
+          <linearGradient id="gnA" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E8192C"/><stop offset="100%" stop-color="#8B5CF6"/></linearGradient>
+          <linearGradient id="gnB" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00F5FF"/><stop offset="100%" stop-color="#8B5CF6"/></linearGradient>
+        </defs>
+        <path d="M-36,-55 L-36,55 L-22,55 L-22,-22 L20,55 L36,55 L36,-55 L22,-55 L22,22 L-20,-55 Z" fill="url(#gnA)"/>
+        <path d="M36,-55 L44,-47 L44,63 L36,55 Z" fill="#8B5CF6" opacity="0.5"/>
+        <path d="M-36,55 L-28,63 L44,63 L36,55 Z" fill="#8B5CF6" opacity="0.3"/>
+        <path d="M-36,-55 L-28,-63 L44,-63 L36,-55 Z" fill="url(#gnB)" opacity="0.4"/>
+      </svg></div></div>
+        <div class="chat-info">
+          <h3>NOVA</h3>
+          <p>Assistant IA · NovaTel</p>
+        </div>
+        <div class="chat-brand">NOVATELL</div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="c-msg nova">
+          <div class="c-bubble">Bonjour, je suis NOVA, l'assistant IA de NovaTel. Comment puis-je vous aider aujourd'hui ?</div>
+          <div class="c-time">maintenant</div>
+        </div>
+      </div>
+
+      <div class="chat-qr" id="chatQR">
+        <button class="c-qr-btn" onclick="cSendQuick('J\'ai une panne internet')">🔴 Panne internet</button>
+        <button class="c-qr-btn" onclick="cSendQuick('Question sur ma facture')">💳 Facturation</button>
+        <button class="c-qr-btn" onclick="cSendQuick('Je voudrais connaître vos offres')">📱 Offres</button>
+        <button class="c-qr-btn" onclick="cSendQuick('Je souhaite résilier')">❌ Résiliation</button>
+        <button class="c-qr-btn" onclick="cSendQuick('Problème technique')">🔧 Support</button>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="chat-input-wrap">
+          <textarea class="chat-textarea" id="chatInput" placeholder="Écrivez votre message..." rows="1"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();cSend()}"
+            oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+        </div>
+        <button class="chat-send" id="chatSend" onclick="cSend()">
+          <svg viewBox="0 0 24 24"><path d="M2 21L23 12 2 3v7l15 2-15 2v7z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">NOVATELL</div>
+    <div class="footer-copy">© 2026 NovaTel — Connectés à votre rythme</div>
+    <div class="footer-links"><a href="#">Mentions légales</a><a href="#">CGU</a><a href="#">RGPD</a></div>
+  </footer>
+</div>
+
+<script>
+// ── NAVIGATION ──
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  const links = document.querySelectorAll('.nav-link');
+  links.forEach(l=>{if(l.textContent.toLowerCase().includes(id)||
+    (id==='accueil'&&l.textContent==='Accueil')||
+    (id==='chatbot'&&l.textContent==='NOVA IA')||
+    (id==='client'&&l.textContent==='Espace Client')||
+    (id==='offres'&&l.textContent==='Offres')||
+    (id==='assistance'&&l.textContent==='Assistance')
+  ) l.classList.add('active')});
+  window.scrollTo(0,0);
+}
+
+// ── OFFRES TABS ──
+function switchOffers(type, btn) {
+  document.querySelectorAll('.offer-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('offers-mobile').style.display = type==='mobile'?'grid':'none';
+  document.getElementById('offers-fixe').style.display = type==='fixe'?'grid':'none';
+}
+
+// ── FAQ ──
+function toggleFaq(item) {
+  item.classList.toggle('open');
+}
+
+// ── LOGIN ──
+function doLogin() {
+  const e = document.getElementById('loginEmail').value;
+  const p = document.getElementById('loginPass').value;
+  if(e && p) {
+    document.getElementById('login-form').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+  } else {
+    alert('Veuillez remplir tous les champs.');
+  }
+}
+function doLogout() {
+  document.getElementById('login-form').style.display='block';
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('loginEmail').value='';
+  document.getElementById('loginPass').value='';
+}
+
+// ── CHATBOT ──
+const NOVA_PROMPT = `Tu es NOVA, l'assistant IA de NovaTel, un opérateur télécom français innovant.
+
+# Identité
+Tu es professionnel, efficace et précis. Tu vas droit au but tout en restant courtois. Tu vouvoies toujours le client. Tu ne tutoies jamais.
+
+# Règles absolues
+- Maximum 3 phrases par réponse
+- Termine toujours tes phrases complètement
+- Ne pose jamais deux questions à la fois
+- Confirme toujours ce que tu as compris avant d'agir
+- Soigne toujours l'orthographe et la grammaire
+- N'invente jamais de données client
+
+# Offres NovaTel
+Forfaits mobiles : Essentiel 9,99€ (50 Go), Confort 19,99€ (150 Go 5G), Premium 29,99€ (300 Go 5G)
+Internet fixe : Box Standard 24,99€ (500 Mbit/s), Box Ultra 39,99€ (2 Gbit/s)
+
+# Scénarios
+## Panne internet
+Demander numéro client → vérifier lumière box → proposer redémarrage → si échec : ticket prioritaire, technicien sous 24h
+
+## Facturation
+Demander numéro client et mois → expliquer → si erreur : créer avoir → si montant > 50€ : transférer conseiller
+
+## Offres et tarifs
+Identifier besoin (mobile/fixe) → présenter offres → proposer transfert conseiller pour souscription
+
+## Résiliation
+Demander motif → tenter rétention (geste commercial, offre ajustée) → si maintien : transfert équipe résiliation sous 24h
+
+## Support technique
+Identifier équipement → guider étape par étape → si non résolu après 2 tentatives : ticket + rappel expert sous 2h
+
+# Escalade
+Transfère si : forte frustration, demande juridique, problème non résolu après 2 tentatives, client le demande.
+Dire : "Je transfère votre dossier à un conseiller NovaTel qui vous contactera rapidement."`;
+
+let chatHistory = [];
+let chatLoading = false;
+
+function getT() {
+  return new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+}
+
+function cAddMsg(role, text) {
+  const box = document.getElementById('chatMessages');
+  const d = document.createElement('div');
+  d.className = `c-msg ${role==='user'?'user':'nova'}`;
+  d.innerHTML = `<div class="c-bubble">${text.replace(/\n/g,'<br>')}</div><div class="c-time">${getT()}</div>`;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+
+function cShowTyping() {
+  document.querySelectorAll('.nova-n').forEach(n=>n.classList.add('thinking'));
+  const box = document.getElementById('chatMessages');
+  const d = document.createElement('div');
+  d.className='c-msg nova';d.id='cTyping';
+  d.innerHTML=`<div class="typing-ind"><span></span><span></span><span></span></div>`;
+  box.appendChild(d);box.scrollTop=box.scrollHeight;
+}
+
+function cRemoveTyping() {
+  document.querySelectorAll('.nova-n').forEach(n=>n.classList.remove('thinking'));
+  const t=document.getElementById('cTyping');if(t)t.remove();
+}
+
+function cHideQR() {
+  document.getElementById('chatQR').style.display='none';
+}
+
+async function cSendQuick(text) {
+  cHideQR();
+  await cSend(text);
+}
+
+async function cSend(override) {
+  if(chatLoading) return;
+  const inp = document.getElementById('chatInput');
+  const text = override || inp.value.trim();
+  if(!text) return;
+
+  cHideQR();
+  inp.value='';inp.style.height='auto';
+
+  cAddMsg('user', text);
+  chatHistory.push({role:'user',content:text});
+
+  chatLoading=true;
+  document.getElementById('chatSend').disabled=true;
+  cShowTyping();
+
+  try {
+    const res = await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json',},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:NOVA_PROMPT,
+        messages:chatHistory
+      })
+    });
+    const data = await res.json();
+    cRemoveTyping();
+    const reply = data.content?.[0]?.text || "Je suis désolé, une erreur est survenue. Veuillez réessayer.";
+    chatHistory.push({role:'assistant',content:reply});
+    cAddMsg('nova', reply);
+  } catch(e) {
+    cRemoveTyping();
+    cAddMsg('nova','Je suis désolé, une erreur de connexion est survenue. Veuillez réessayer.');
+  }
+
+  chatLoading=false;
+  document.getElementById('chatSend').disabled=false;
+}
+</script>
+</body>
+</html>
