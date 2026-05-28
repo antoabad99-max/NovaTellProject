@@ -675,6 +675,37 @@ footer{
 }
 @keyframes lblPulse{0%,100%{opacity:0.4}50%{opacity:1}}
 
+
+/* ── STAR RATING ── */
+.rating-box{
+  background:var(--dark3);border:1px solid var(--border);
+  border-radius:12px;padding:16px;margin:10px 0;
+  animation:mi 0.3s ease;text-align:center;
+}
+.rating-title{font-size:13px;color:var(--white);font-weight:500;margin-bottom:12px}
+.stars{display:flex;justify-content:center;gap:8px;margin-bottom:12px}
+.star{
+  font-size:28px;cursor:pointer;
+  transition:transform 0.2s;opacity:0.3;
+  filter:grayscale(1);
+}
+.star:hover,.star.active{opacity:1;filter:none;transform:scale(1.2)}
+.star.active{animation:starPop 0.3s ease}
+@keyframes starPop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1.2)}}
+.rating-msg{font-size:12px;color:var(--grey);min-height:18px;margin-bottom:10px}
+.rating-submit{
+  background:var(--red);color:white;border:none;
+  font-family:inherit;font-size:13px;font-weight:600;
+  padding:9px 24px;border-radius:9px;cursor:pointer;
+  transition:all 0.2s;opacity:0.4;pointer-events:none;
+}
+.rating-submit.ready{opacity:1;pointer-events:all}
+.rating-submit.ready:hover{background:#c4111f}
+.rating-done{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:13px;color:#22c55e;font-weight:500;padding:8px;
+}
+
 </style>
 </head>
 <body>
@@ -1261,6 +1292,7 @@ async function cSend(override) {
     chatHistory.push({role:'assistant',content:reply});
     cAddMsg('nova', reply);
     speak(reply);
+    if(checkForGoodbye(reply)){ setTimeout(showRating, 800); }
   } catch(e) {
     cRemoveTyping();
     cAddMsg('nova','Je suis désolé, une erreur de connexion est survenue. Veuillez réessayer.');
@@ -1392,6 +1424,76 @@ if(window.speechSynthesis){
   window.speechSynthesis.onvoiceschanged = function(){
     window.speechSynthesis.getVoices();
   };
+}
+
+
+// ── STAR RATING ──
+var currentRating = 0;
+var ratingShown = false;
+
+var ratingMessages = {
+  1: '😞 Très insatisfait — nous allons nous améliorer',
+  2: '😕 Insatisfait — désolé pour cette expérience',
+  3: '😐 Correct — nous pouvons mieux faire',
+  4: '😊 Satisfait — merci pour votre retour',
+  5: '🌟 Excellent — merci beaucoup !'
+};
+
+function showRating(){
+  if(ratingShown) return;
+  ratingShown = true;
+  const box = document.getElementById('chatMessages');
+  const d = document.createElement('div');
+  d.className = 'c-msg nova';
+  d.id = 'ratingBox';
+  d.innerHTML = `
+    <div class="rating-box">
+      <div class="rating-title">Comment évaluez-vous notre assistance aujourd'hui ?</div>
+      <div class="stars">
+        <span class="star" onclick="selectStar(1)" id="s1">⭐</span>
+        <span class="star" onclick="selectStar(2)" id="s2">⭐</span>
+        <span class="star" onclick="selectStar(3)" id="s3">⭐</span>
+        <span class="star" onclick="selectStar(4)" id="s4">⭐</span>
+        <span class="star" onclick="selectStar(5)" id="s5">⭐</span>
+      </div>
+      <div class="rating-msg" id="ratingMsg">Sélectionnez une note</div>
+      <button class="rating-submit" id="ratingSubmit" onclick="submitRating()">Envoyer mon avis</button>
+    </div>`;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+
+function selectStar(n){
+  currentRating = n;
+  for(var i=1;i<=5;i++){
+    var s = document.getElementById('s'+i);
+    if(s){
+      s.classList.toggle('active', i<=n);
+    }
+  }
+  document.getElementById('ratingMsg').textContent = ratingMessages[n] || '';
+  var btn = document.getElementById('ratingSubmit');
+  if(btn) btn.classList.add('ready');
+}
+
+function submitRating(){
+  if(!currentRating) return;
+  var box = document.getElementById('ratingBox');
+  if(box){
+    box.querySelector('.rating-box').innerHTML = `
+      <div class="rating-done">
+        ✅ Merci pour votre avis — ${currentRating}/5 étoiles enregistré
+      </div>`;
+  }
+  // Reset for next conversation
+  currentRating = 0;
+}
+
+// Detect end of conversation keywords
+function checkForGoodbye(text){
+  var goodbyeWords = ['bonne journée','au revoir','bonsoir','à bientôt','merci beaucoup','merci pour votre','n hésitez pas','n\'hésitez pas','prenez soin'];
+  var lower = text.toLowerCase();
+  return goodbyeWords.some(function(w){ return lower.includes(w); });
 }
 
 </script>
