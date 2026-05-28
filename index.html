@@ -579,73 +579,23 @@ footer{
   footer{flex-direction:column;text-align:center}
 }
 
-/* ── RÉSUMÉ DOSSIER ── */
-.summary-btn {
-  width:100%;background:transparent;
-  border:1px solid rgba(0,245,255,0.3);
-  color:var(--cyan);
-  font-family:'Inter',sans-serif;font-size:12px;font-weight:500;
-  padding:9px;border-radius:9px;cursor:pointer;
-  transition:all 0.2s;margin-top:8px;
-  display:flex;align-items:center;justify-content:center;gap:7px;
-}
-.summary-btn:hover{background:rgba(0,245,255,0.08);border-color:var(--cyan)}
-
-.summary-panel{
-  background:var(--dark3);border:1px solid rgba(0,245,255,0.2);
-  border-radius:12px;padding:18px;margin-top:12px;
-  display:none;animation:mi 0.3s ease;
-}
-.summary-panel.visible{display:block}
-.summary-title{
-  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
-  color:var(--cyan);margin-bottom:12px;
-  display:flex;align-items:center;gap:7px;
-}
-.summary-content{font-size:12px;color:var(--grey);line-height:1.8}
-.summary-content strong{color:var(--white)}
-.summary-copy{
-  width:100%;background:var(--red);color:white;border:none;
-  font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
-  padding:8px;border-radius:8px;cursor:pointer;margin-top:12px;
-  transition:all 0.2s;
-}
+.summary-btn{width:100%;background:transparent;border:1px solid rgba(0,245,255,0.25);color:#00F5FF;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;padding:9px;border-radius:9px;cursor:pointer;transition:all 0.2s;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:7px}
+.summary-btn:hover{background:rgba(0,245,255,0.08)}
+.summary-panel{background:#111827;border:1px solid rgba(0,245,255,0.15);border-radius:12px;padding:16px;margin-top:10px;display:none}
+.summary-panel.open{display:block}
+.summary-title{font-size:12px;font-weight:700;color:#00F5FF;margin-bottom:10px}
+.summary-body{font-size:12px;color:#94A3B8;line-height:1.8;white-space:pre-wrap}
+.summary-copy{width:100%;background:#E8192C;color:white;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;padding:8px;border-radius:8px;cursor:pointer;margin-top:10px;transition:all 0.2s}
 .summary-copy:hover{background:#c4111f}
-.summary-loading{
-  text-align:center;color:var(--grey);font-size:12px;padding:12px;
-}
-
-/* ── VOICE INPUT ── */
-.voice-controls{
-  display:flex;gap:8px;align-items:center;padding:0 14px 10px;
-}
-.mic-btn{
-  width:36px;height:36px;background:transparent;
-  border:1px solid rgba(232,25,44,0.3);
-  border-radius:50%;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:all 0.2s;flex-shrink:0;
-  font-size:16px;
-}
-.mic-btn:hover{background:rgba(232,25,44,0.1);border-color:var(--red)}
-.mic-btn.recording{
-  background:var(--red);border-color:var(--red);
-  animation:micPulse 1s ease-in-out infinite;
-}
-@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,25,44,0.4)}50%{box-shadow:0 0 0 8px rgba(232,25,44,0)}}
-.audio-upload-label{
-  display:flex;align-items:center;gap:5px;
-  font-size:11px;color:var(--grey);cursor:pointer;
-  padding:6px 10px;border:1px solid var(--border);
-  border-radius:8px;transition:all 0.2s;white-space:nowrap;
-}
-.audio-upload-label:hover{border-color:var(--red);color:var(--red)}
-.audio-upload-input{display:none}
-.voice-status{
-  font-size:11px;color:var(--red);
-  padding:4px 14px;display:none;
-}
-.voice-status.visible{display:block}
+.voice-row{display:flex;align-items:center;gap:8px;padding:6px 14px 10px}
+.mic-btn{width:34px;height:34px;background:transparent;border:1px solid rgba(232,25,44,0.3);border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
+.mic-btn:hover{background:rgba(232,25,44,0.1);border-color:#E8192C}
+.mic-btn.rec{background:#E8192C;border-color:#E8192C;animation:rp 1s infinite}
+@keyframes rp{0%,100%{box-shadow:0 0 0 0 rgba(232,25,44,0.4)}50%{box-shadow:0 0 0 7px rgba(232,25,44,0)}}
+.audio-lbl{display:flex;align-items:center;gap:5px;font-size:11px;color:#94A3B8;cursor:pointer;padding:5px 10px;border:1px solid rgba(255,255,255,0.08);border-radius:8px;transition:all 0.2s;white-space:nowrap}
+.audio-lbl:hover{border-color:#E8192C;color:#E8192C}
+.vstatus{font-size:11px;color:#E8192C;display:none}
+.vstatus.on{display:block}
 </style>
 </head>
 <body>
@@ -1178,7 +1128,7 @@ async function cSend(override) {
   try {
     const res = await fetch('/api/chat',{
       method:'POST',
-      headers:{'Content-Type':'application/json',},
+      headers:{'Content-Type':'application/json','x-api-key': 'REMOVED'},
       body:JSON.stringify({
         model:'claude-opus-4-5',
         max_tokens:1000,
@@ -1200,205 +1150,65 @@ async function cSend(override) {
   document.getElementById('chatSend').disabled=false;
 }
 
-// ── RÉSUMÉ ──
-async function generateSummary() {
-  if(ch2.length < 2) {
-    alert("La conversation est trop courte pour générer un résumé.");
-    return;
-  }
-  const panel = document.getElementById('summaryPanel');
-  const content = document.getElementById('summaryContent');
-  panel.classList.add('visible');
-  content.innerHTML = '<div class="summary-loading">⏳ Génération de la fiche dossier...</div>';
-
-  try {
-    const summaryMessages = [...ch2, {
-      role: 'user',
-      content: `Génère une fiche dossier client structurée en français pour historiser cette conversation. Format souhaité :
-
-**FICHE DOSSIER CLIENT**
-- Date : [date et heure]
-- Canal : Chat IA NOVA / NovaTel
-- Motif du contact : [motif principal]
-- Problème décrit : [description]
-- Actions effectuées : [ce que NOVA a fait]
-- Statut de résolution : [Résolu / En cours / Escaladé]
-- Ticket créé : [Oui/Non + numéro si applicable]
-- Geste commercial : [Oui/Non + détail]
-- Prochaine action : [ce qui doit être fait]
-- Niveau de satisfaction estimé : [Bon / Neutre / Insatisfait]`
-    }];
-
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        model: 'claude-opus-4-5',
-        max_tokens: 1000,
-        system: 'Tu es un assistant qui génère des fiches dossier client structurées et professionnelles pour un opérateur télécom.',
-        messages: summaryMessages
-      })
-    });
-    const data = await res.json();
-    const summary = data.content?.[0]?.text || "Impossible de générer le résumé.";
-    content.innerHTML = summary.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/
-/g, '<br>');
-  } catch(e) {
-    content.innerHTML = 'Erreur lors de la génération du résumé.';
-  }
+// ── SUMMARY ──
+async function genSum(){
+  if(ch2.length<2){alert('Commencez d'abord une conversation avec NOVA.');return;}
+  document.getElementById('sumPanel').classList.add('open');
+  document.getElementById('sumBody').textContent='⏳ Génération en cours...';
+  try{
+    const msgs=[...ch2,{role:'user',content:'Génère une fiche dossier client structurée pour cette conversation. Inclus : Date et heure, Motif du contact, Problème décrit, Actions effectuées par NOVA, Statut (Résolu/En cours/Escaladé), Ticket créé (Oui/Non), Geste commercial (Oui/Non + détail), Prochaine action requise, Satisfaction estimée (Bon/Neutre/Insatisfait). Sois concis et professionnel.'}];
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-opus-4-5',max_tokens:600,system:'Tu génères des fiches dossier client professionnelles et concises pour un opérateur télécom.',messages:msgs})});
+    const d=await r.json();
+    document.getElementById('sumBody').textContent=d.content?.[0]?.text||'Erreur.';
+  }catch(e){document.getElementById('sumBody').textContent='Erreur de génération.';}
 }
-
-function copySummary() {
-  const text = document.getElementById('summaryContent').innerText;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.querySelector('.summary-copy');
-    btn.textContent = '✅ Copié !';
-    setTimeout(() => btn.textContent = '📋 Copier la fiche', 2000);
+function copySum(){
+  navigator.clipboard.writeText(document.getElementById('sumBody').textContent).then(()=>{
+    const b=document.querySelector('.summary-copy');b.textContent='✅ Copié!';setTimeout(()=>b.textContent='📋 Copier',2000);
   });
 }
 
-// ── VOICE INPUT ──
-let mediaRecorder = null;
-let audioChunks = [];
-let isRecording = false;
-
-async function toggleMic() {
-  if(isRecording) {
-    stopRecording();
-  } else {
-    startRecording();
-  }
-}
-
-async function startRecording() {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
-    mediaRecorder = new MediaRecorder(stream);
-    audioChunks = [];
-
-    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-    mediaRecorder.onstop = async () => {
-      const audioBlob = new Blob(audioChunks, {type: 'audio/webm'});
-      await transcribeAudio(audioBlob);
-      stream.getTracks().forEach(t => t.stop());
+// ── VOICE ──
+let mRec=null,aChunks=[],isRec=false;
+function tMic(){isRec?stopRec():startRec();}
+async function startRec(){
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    mRec=new MediaRecorder(stream);aChunks=[];
+    mRec.ondataavailable=e=>aChunks.push(e.data);
+    mRec.onstop=async()=>{
+      const blob=new Blob(aChunks,{type:'audio/webm'});
+      stream.getTracks().forEach(t=>t.stop());
+      useSpeech();
     };
-
-    mediaRecorder.start();
-    isRecording = true;
-    document.getElementById('micBtn').classList.add('recording');
-    document.getElementById('micBtn').textContent = '⏹️';
-    document.getElementById('voiceStatus').classList.add('visible');
-  } catch(e) {
-    alert("Accès au microphone refusé. Veuillez autoriser l'accès dans votre navigateur.");
-  }
+    mRec.start();isRec=true;
+    document.getElementById('micBtn').classList.add('rec');
+    document.getElementById('micBtn').textContent='⏹️';
+    document.getElementById('vstatus').classList.add('on');
+  }catch(e){alert('Accès micro refusé. Autorisez le micro dans votre navigateur.');}
 }
-
-function stopRecording() {
-  if(mediaRecorder && isRecording) {
-    mediaRecorder.stop();
-    isRecording = false;
-    document.getElementById('micBtn').classList.remove('recording');
-    document.getElementById('micBtn').textContent = '🎙️';
-    document.getElementById('voiceStatus').classList.remove('visible');
-  }
+function stopRec(){
+  if(mRec&&isRec){mRec.stop();isRec=false;document.getElementById('micBtn').classList.remove('rec');document.getElementById('micBtn').textContent='🎙️';document.getElementById('vstatus').classList.remove('on');}
 }
-
-async function handleAudioFile(event) {
-  const file = event.target.files[0];
-  if(!file) return;
-  document.getElementById('voiceStatus').textContent = '⏳ Traitement du fichier audio...';
-  document.getElementById('voiceStatus').classList.add('visible');
-  await transcribeAudio(file);
-  document.getElementById('voiceStatus').classList.remove('visible');
-  event.target.value = '';
+function useSpeech(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Reconnaissance vocale non supportée. Utilisez Chrome.');return;}
+  const r=new SR();r.lang='fr-FR';r.continuous=false;r.interimResults=false;
+  r.onresult=e=>{const t=e.results[0][0].transcript;const inp=document.getElementById('cta');inp.value=t;inp.style.height='auto';inp.style.height=inp.scrollHeight+'px';cs();};
+  r.onerror=()=>alert('Erreur de reconnaissance vocale.');
+  r.start();
 }
-
-async function transcribeAudio(audioBlob) {
-  document.getElementById('voiceStatus').textContent = '⏳ Transcription en cours...';
-  document.getElementById('voiceStatus').classList.add('visible');
-
-  try {
-    // Convert to base64
-    const reader = new FileReader();
-    reader.readAsDataURL(audioBlob);
-    reader.onloadend = async () => {
-      const base64 = reader.result.split(',')[1];
-      const mimeType = audioBlob.type || 'audio/webm';
-
-      // Use Claude to transcribe via our backend
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          model: 'claude-opus-4-5',
-          max_tokens: 500,
-          system: 'Tu es un assistant de transcription. Transcris exactement ce que dit la personne dans le message audio. Réponds uniquement avec la transcription, sans commentaire.',
-          messages: [{
-            role: 'user',
-            content: [{
-              type: 'text',
-              text: 'Transcris ce message audio en français :'
-            }, {
-              type: 'document',
-              source: {
-                type: 'base64',
-                media_type: mimeType,
-                data: base64
-              }
-            }]
-          }]
-        })
-      });
-
-      const data = await res.json();
-      const transcription = data.content?.[0]?.text;
-
-      document.getElementById('voiceStatus').classList.remove('visible');
-
-      if(transcription && !transcription.includes('error')) {
-        // Put transcription in input and send
-        const inp = document.getElementById('cta');
-        inp.value = transcription;
-        inp.style.height = 'auto';
-        inp.style.height = inp.scrollHeight + 'px';
-        // Auto-send
-        await cs();
-      } else {
-        // Fallback - use Web Speech API for transcription display
-        alert("La transcription audio nécessite un format compatible. Essayez de parler directement via le microphone.");
-      }
-    };
-  } catch(e) {
-    document.getElementById('voiceStatus').classList.remove('visible');
-    // Fallback to Web Speech API
-    useWebSpeech();
-  }
+function hAudio(e){
+  const f=e.target.files[0];if(!f)return;
+  document.getElementById('vstatus').textContent='⏳ Transcription...';
+  document.getElementById('vstatus').classList.add('on');
+  useSpeech();
+  document.getElementById('vstatus').classList.remove('on');
+  document.getElementById('vstatus').textContent='🔴 Enregistrement...';
+  e.target.value='';
 }
-
-function useWebSpeech() {
-  if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    alert("La reconnaissance vocale n'est pas supportée sur votre navigateur. Utilisez Chrome.");
-    return;
-  }
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = new SR();
-  recognition.lang = 'fr-FR';
-  recognition.continuous = false;
-  recognition.interimResults = false;
-
-  recognition.onresult = (e) => {
-    const transcript = e.results[0][0].transcript;
-    const inp = document.getElementById('cta');
-    inp.value = transcript;
-    inp.style.height = 'auto';
-    inp.style.height = inp.scrollHeight + 'px';
-    cs();
-  };
-  recognition.onerror = () => alert("Erreur de reconnaissance vocale.");
-  recognition.start();
-}
-
 </script>
 </body>
 </html>
+
 
