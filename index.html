@@ -972,6 +972,19 @@ footer{
           <svg viewBox="0 0 24 24"><path d="M2 21L23 12 2 3v7l15 2-15 2v7z"/></svg>
         </button>
       </div>
+      <div class="mic-row">
+        <button class="mic-b" id="micB" onclick="tMic()">🎙️</button>
+        <label class="aud-lbl"><input type="file" style="display:none" accept="audio/*" onchange="hAud(event)"/>📎 Audio</label>
+        <span class="vst" id="vst">🔴 En cours...</span>
+      </div>
+      <div style="padding:0 16px 16px">
+        <button class="sum-btn" onclick="genSum()">📋 Générer la fiche dossier</button>
+        <div class="sum-panel" id="sumP">
+          <div class="sum-title">📁 Fiche Dossier — NovaTel</div>
+          <div class="sum-body" id="sumB">Chargement...</div>
+          <button class="sum-copy" onclick="cpSum()">📋 Copier la fiche</button>
+        </div>
+      </div>
     </div>
   </div>
 
