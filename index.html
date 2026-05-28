@@ -1072,7 +1072,7 @@ footer{
         <div class="call-box-sub">Entrez votre numéro français et NOVA vous appellera dans les secondes qui suivent.</div>
         <div class="call-input-wrap">
           <input class="call-input" type="tel" id="callNumber" placeholder="06 12 34 56 78"/>
-          <button class="call-submit" id="callBtn" onclick="initiateCall()">📞 M'appeler</button>
+          <button class="call-submit" id="callBtn" onclick="initiateCall()">📞 M appeler</button>
         </div>
         <div class="call-status" id="callStatus"></div>
         <div class="call-note">⚠️ Mode trial Twilio — uniquement vers les numéros vérifiés</div>
@@ -1585,19 +1585,19 @@ async function initiateCall(){
       btn.textContent = '✅ Appel lancé';
       setTimeout(function(){
         btn.disabled = false;
-        btn.innerHTML = "📞 M'appeler";
+        btn.innerHTML = "📞 M appeler";
       }, 30000);
     } else {
       status.className = 'call-status error';
-      status.textContent = '❌ ' + (d.error || 'Erreur lors de l'appel');
+      status.textContent = '❌ ' + (d.error || "Erreur lors de l'appel");
       btn.disabled = false;
-      btn.innerHTML = "📞 M'appeler";
+      btn.innerHTML = "📞 M appeler";
     }
   } catch(e) {
     status.className = 'call-status error';
     status.textContent = '❌ Erreur de connexion. Réessayez.';
     btn.disabled = false;
-    btn.innerHTML = "📞 M'appeler";
+    btn.innerHTML = "📞 M appeler";
   }
 }
 
