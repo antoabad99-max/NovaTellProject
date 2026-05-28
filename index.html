@@ -1095,6 +1095,7 @@ footer{
       </div>
       <div style="padding:0 16px 16px">
         <button class="sum-btn" onclick="genSum()">📋 Générer la fiche dossier</button>
+        <button class="sum-btn" style="border-color:rgba(255,215,0,0.3);color:#FFD700;margin-top:6px" onclick="ratingShown=false;showRating()">⭐ Noter la conversation</button>
         <div class="sum-panel" id="sumP">
           <div class="sum-header">
             <div class="sum-title">📁 Fiche Dossier — NovaTel</div>
@@ -1182,7 +1183,7 @@ function doLogout() {
 }
 
 // ── CHATBOT ──
-const NOVA_PROMPT = `Tu es NOVA, l'assistant IA de NovaTel, un opérateur télécom français innovant.
+const NOVA_PROMPT = `Tu es NOVA, l'assistant IA de NovaTel, un opérateur télécom français innovant. RÈGLE ABSOLUE : quand la conversation se termine ou que le client dit merci/au revoir/ce sera tout, tu DOIS impérativement terminer ton message par 'Bonne journée !' ou 'Bonne soirée !' ou 'À bientôt !'.
 
 # Identité
 Tu es professionnel, efficace et précis. Tu vas droit au but tout en restant courtois. Tu vouvoies toujours le client. Tu ne tutoies jamais.
@@ -1491,7 +1492,20 @@ function submitRating(){
 
 // Detect end of conversation keywords
 function checkForGoodbye(text){
-  var goodbyeWords = ['bonne journée','au revoir','bonsoir','à bientôt','merci beaucoup','merci pour votre','n hésitez pas','n\'hésitez pas','prenez soin'];
+  var goodbyeWords = [
+    'bonne journée','bonne soirée','bonne nuit','au revoir',
+    'à bientôt','à très bientôt','à bientôt chez novatell',
+    "n'hésitez pas",'n hésitez pas','nhésitez pas',
+    'prenez soin','à votre service','bonne continuation',
+    'avec plaisir','ravi de vous','problème résolu',
+    'connexion rétablie','ticket créé','ticket enregistré',
+    'nous contacter','recontacter','cordialement',
+    'belle journée','excellente journée','passez une bonne',
+    'merci de votre confiance','merci pour votre confiance',
+    'toute l équipe','toute notre équipe','restons disponibles',
+    'nous restons','à votre disposition','bonne fin de journée',
+    'à votre écoute','bien cordialement','bien à vous'
+  ];
   var lower = text.toLowerCase();
   return goodbyeWords.some(function(w){ return lower.includes(w); });
 }
