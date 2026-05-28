@@ -752,6 +752,38 @@ footer{
 }
 .call-note{font-size:11px;color:var(--grey);margin-top:12px;opacity:0.7}
 
+
+/* ── MANAGER ── */
+.mgr-login{max-width:380px;margin:0 auto;background:var(--dark2);border:1px solid rgba(139,92,246,0.3);border-radius:20px;padding:40px}
+.mgr-logo{text-align:center;margin-bottom:28px;font-family:'Syne',sans-serif;font-size:22px;font-weight:800;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.mgr-dashboard{display:none}
+.mgr-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.mgr-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800}
+.mgr-title span{background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.mgr-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.mgr-stat{background:var(--dark2);border:1px solid rgba(139,92,246,0.2);border-radius:12px;padding:20px;text-align:center}
+.mgr-stat-n{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.mgr-stat-l{font-size:11px;color:var(--grey);margin-top:4px}
+.mgr-section{background:var(--dark2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px}
+.mgr-section-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.mgr-conv-list{display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto}
+.mgr-conv-item{background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all 0.2s}
+.mgr-conv-item:hover{border-color:rgba(139,92,246,0.4)}
+.mgr-conv-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mgr-conv-id{font-family:'DM Mono',monospace;font-size:11px;color:#8B5CF6}
+.mgr-conv-time{font-size:11px;color:var(--grey)}
+.mgr-conv-preview{font-size:12px;color:var(--grey);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mgr-conv-stars{font-size:13px}
+.mgr-gen-btn{width:100%;background:linear-gradient(135deg,#8B5CF6,#00F5FF);color:white;border:none;font-family:inherit;font-size:13px;font-weight:600;padding:11px;border-radius:9px;cursor:pointer;margin-top:10px;transition:all 0.2s}
+.mgr-gen-btn:hover{opacity:0.9;transform:translateY(-1px)}
+.mgr-fiche{background:var(--dark3);border:1px solid rgba(139,92,246,0.2);border-radius:10px;padding:16px;margin-top:12px;display:none}
+.mgr-fiche.open{display:block}
+.mgr-fiche-title{font-size:12px;font-weight:700;color:#8B5CF6;margin-bottom:10px}
+.mgr-fiche-body{font-size:12px;color:var(--grey);line-height:1.8;white-space:pre-wrap}
+.mgr-fiche-copy{background:var(--dark2);border:1px solid var(--border);color:var(--white);font-family:inherit;font-size:11px;padding:7px 14px;border-radius:7px;cursor:pointer;margin-top:10px;transition:all 0.2s}
+.mgr-fiche-copy:hover{border-color:#8B5CF6;color:#8B5CF6}
+.mgr-empty{text-align:center;color:var(--grey);font-size:13px;padding:20px}
+
 </style>
 </head>
 <body>
@@ -765,6 +797,7 @@ footer{
     <button class="nav-link" onclick="showPage('assistance')">Assistance</button>
     <button class="nav-link" onclick="showPage('client')">Espace Client</button>
     <button class="nav-link" onclick="showPage('chatbot')">NOVA IA</button>
+    <button class="nav-link" onclick="showPage('manager')" style="color:#8B5CF6">⚙️ Manager</button>
     <button class="nav-cta" onclick="showPage('client')">Connexion</button>
   </div>
 </nav>
@@ -1089,6 +1122,61 @@ footer{
 </div>
 
 <!-- ══════════════════════════════════
+     PAGE MANAGER
+══════════════════════════════════ -->
+<div class="page" id="page-manager">
+  <div class="client-wrapper">
+    <div id="mgr-login-form">
+      <div class="mgr-login">
+        <div class="mgr-logo">⚙️ Espace Manager</div>
+        <div class="form-group">
+          <label class="form-label">Identifiant</label>
+          <input class="form-input" type="text" placeholder="manager" id="mgrUser"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <input class="form-input" type="password" placeholder="••••••••" id="mgrPass"/>
+        </div>
+        <button class="login-btn" style="background:linear-gradient(135deg,#8B5CF6,#00F5FF)" onclick="mgrLogin()">Accès Manager</button>
+        <div class="login-hint" style="margin-top:14px">Identifiants par défaut : <span style="color:#8B5CF6">manager / novatell2026</span></div>
+      </div>
+    </div>
+    <div class="mgr-dashboard" id="mgr-dashboard">
+      <div class="mgr-header">
+        <div class="mgr-title">Tableau de bord <span>Manager</span></div>
+        <button class="logout-btn" onclick="mgrLogout()">Déconnexion</button>
+      </div>
+      <div class="mgr-stats">
+        <div class="mgr-stat"><div class="mgr-stat-n" id="mgrTotalConv">0</div><div class="mgr-stat-l">CONVERSATIONS</div></div>
+        <div class="mgr-stat"><div class="mgr-stat-n" id="mgrAvgRating">—</div><div class="mgr-stat-l">NOTE MOYENNE</div></div>
+        <div class="mgr-stat"><div class="mgr-stat-n" id="mgrFiches">0</div><div class="mgr-stat-l">FICHES GÉNÉRÉES</div></div>
+      </div>
+      <div class="mgr-section">
+        <div class="mgr-section-title">💬 Conversations récentes</div>
+        <div class="mgr-conv-list" id="mgrConvList">
+          <div class="mgr-empty">Aucune conversation enregistrée pour le moment.</div>
+        </div>
+      </div>
+      <div class="mgr-section" id="mgrFicheSection" style="display:none">
+        <div class="mgr-section-title">📋 Fiche Dossier</div>
+        <div id="mgrSelectedConv" style="font-size:12px;color:var(--grey);margin-bottom:10px"></div>
+        <button class="mgr-gen-btn" onclick="mgrGenFiche()">📋 Générer la fiche dossier</button>
+        <div class="mgr-fiche" id="mgrFiche">
+          <div class="mgr-fiche-title">📁 Fiche Dossier Client — NovaTel</div>
+          <div class="mgr-fiche-body" id="mgrFicheBody">Génération en cours...</div>
+          <button class="mgr-fiche-copy" onclick="mgrCopyFiche()">📋 Copier</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo">NOVATELL</div>
+    <div class="footer-copy">© 2026 NovaTel — Espace Manager</div>
+    <div class="footer-links"><a href="#">CGU</a><a href="#">RGPD</a></div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════
      PAGE CHATBOT
 ══════════════════════════════════ -->
 <div class="page" id="page-chatbot">
@@ -1152,36 +1240,7 @@ footer{
         </button>
         <span class="vst" id="vst">🔴 En cours...</span>
       </div>
-      <div style="padding:0 16px 16px">
-        <button class="sum-btn" onclick="genSum()">📋 Générer la fiche dossier</button>
-        <div class="sum-panel" id="sumP">
-          <div class="sum-header">
-            <div class="sum-title">📁 Fiche Dossier — NovaTel</div>
-            <div class="sum-actions">
-              <button class="sum-expand" id="minBtn" onclick="toggleMin()" title="Réduire">— Réduire</button>
-            </div>
-          </div>
-          <div id="sumContent">
-            <div class="sum-body" id="sumB">Chargement...</div>
-            <button class="sum-copy" onclick="cpSum()">📋 Copier la fiche</button>
-          </div>
-        </div>
 
-        <!-- Modal plein écran -->
-        <div class="sum-modal" id="sumModal" onclick="closeSumModal(event)">
-          <div class="sum-modal-box">
-            <div class="sum-modal-title">
-              📁 Fiche Dossier Client — NovaTel
-              <button onclick="closeSumModal()" style="background:transparent;border:none;color:#94A3B8;font-size:20px;cursor:pointer">✕</button>
-            </div>
-            <div class="sum-modal-body" id="sumModalB"></div>
-            <div class="sum-modal-footer">
-              <button class="sum-modal-copy" onclick="cpSumModal()">📋 Copier la fiche</button>
-              <button class="sum-modal-close" onclick="closeSumModal()">Fermer</button>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -1544,6 +1603,8 @@ function submitRating(){
         ✅ Merci pour votre avis — ${currentRating}/5 étoiles enregistré
       </div>`;
   }
+  // Save conversation to manager dashboard
+  saveConversation(chatHistory, currentRating);
   // Reset for next conversation
   currentRating = 0;
 }
@@ -1599,6 +1660,129 @@ async function initiateCall(){
     btn.disabled = false;
     btn.innerHTML = "📞 M appeler";
   }
+}
+
+
+// ── MANAGER ──
+var mgrConversations = [];
+var mgrSelectedIndex = -1;
+
+function mgrLogin(){
+  var u = document.getElementById('mgrUser').value;
+  var p = document.getElementById('mgrPass').value;
+  if(u === 'manager' && p === 'novatell2026'){
+    document.getElementById('mgr-login-form').style.display = 'none';
+    document.getElementById('mgr-dashboard').style.display = 'block';
+    mgrLoadConversations();
+  } else {
+    alert('Identifiants incorrects.');
+  }
+}
+
+function mgrLogout(){
+  document.getElementById('mgr-login-form').style.display = 'block';
+  document.getElementById('mgr-dashboard').style.display = 'none';
+  document.getElementById('mgrUser').value = '';
+  document.getElementById('mgrPass').value = '';
+}
+
+function mgrLoadConversations(){
+  // Load from localStorage
+  var saved = localStorage.getItem('novatell_conversations');
+  mgrConversations = saved ? JSON.parse(saved) : [];
+  mgrRenderConversations();
+  mgrUpdateStats();
+}
+
+function mgrRenderConversations(){
+  var list = document.getElementById('mgrConvList');
+  document.getElementById('mgrTotalConv').textContent = mgrConversations.length;
+
+  if(mgrConversations.length === 0){
+    list.innerHTML = '<div class="mgr-empty">Aucune conversation enregistrée.<br>Les conversations apparaîtront ici quand les clients utiliseront NOVA.</div>';
+    return;
+  }
+
+  list.innerHTML = mgrConversations.map(function(conv, i){
+    var stars = conv.rating ? '⭐'.repeat(conv.rating) : '—';
+    var preview = conv.messages && conv.messages.length > 0 ? conv.messages[0].content.substring(0, 60) + '...' : 'Conversation vide';
+    return '<div class="mgr-conv-item" onclick="mgrSelectConv(' + i + ')">' +
+      '<div class="mgr-conv-header">' +
+      '<span class="mgr-conv-id">#' + conv.id + '</span>' +
+      '<span class="mgr-conv-stars">' + stars + '</span>' +
+      '<span class="mgr-conv-time">' + conv.date + '</span>' +
+      '</div>' +
+      '<div class="mgr-conv-preview">' + preview + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function mgrUpdateStats(){
+  var ratings = mgrConversations.filter(function(c){ return c.rating; }).map(function(c){ return c.rating; });
+  var avg = ratings.length > 0 ? (ratings.reduce(function(a,b){return a+b;},0)/ratings.length).toFixed(1) : '—';
+  document.getElementById('mgrAvgRating').textContent = avg + (avg !== '—' ? '★' : '');
+  document.getElementById('mgrFiches').textContent = mgrConversations.filter(function(c){ return c.fiche; }).length;
+}
+
+function mgrSelectConv(i){
+  mgrSelectedIndex = i;
+  var conv = mgrConversations[i];
+  document.getElementById('mgrFicheSection').style.display = 'block';
+  document.getElementById('mgrSelectedConv').textContent = 'Conversation #' + conv.id + ' — ' + conv.date + ' — ' + conv.messages.length + ' messages';
+  document.getElementById('mgrFiche').classList.remove('open');
+  document.querySelectorAll('.mgr-conv-item').forEach(function(el, idx){
+    el.style.borderColor = idx === i ? 'rgba(139,92,246,0.5)' : '';
+  });
+  document.getElementById('mgrFicheSection').scrollIntoView({behavior:'smooth'});
+}
+
+async function mgrGenFiche(){
+  if(mgrSelectedIndex < 0) return;
+  var conv = mgrConversations[mgrSelectedIndex];
+  document.getElementById('mgrFiche').classList.add('open');
+  document.getElementById('mgrFicheBody').textContent = 'Génération en cours...';
+
+  try {
+    var msgs = conv.messages.concat([{
+      role: 'user',
+      content: 'Génère une fiche dossier client structurée. Inclus : Motif du contact, Problème décrit, Actions effectuées, Statut (Résolu/En cours/Escaladé), Ticket créé (Oui/Non), Geste commercial (Oui/Non), Prochaine action, Satisfaction : ' + (conv.rating ? conv.rating + '/5' : 'Non renseignée') + '.'
+    }]);
+
+    var r = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-opus-4-5', max_tokens:600, system:'Tu génères des fiches dossier client professionnelles pour un opérateur télécom. Sois concis et structuré.', messages: msgs})
+    });
+    var d = await r.json();
+    var fiche = d.content && d.content[0] ? d.content[0].text : 'Erreur de génération.';
+    document.getElementById('mgrFicheBody').textContent = fiche;
+
+    // Save fiche to conversation
+    mgrConversations[mgrSelectedIndex].fiche = fiche;
+    localStorage.setItem('novatell_conversations', JSON.stringify(mgrConversations));
+    document.getElementById('mgrFiches').textContent = mgrConversations.filter(function(c){ return c.fiche; }).length;
+  } catch(e) {
+    document.getElementById('mgrFicheBody').textContent = 'Erreur de génération.';
+  }
+}
+
+function mgrCopyFiche(){
+  navigator.clipboard.writeText(document.getElementById('mgrFicheBody').textContent).then(function(){
+    var b = document.querySelector('.mgr-fiche-copy');
+    b.textContent = '✅ Copié !';
+    setTimeout(function(){ b.textContent = '📋 Copier'; }, 2000);
+  });
+}
+
+// Save conversation to localStorage when it ends
+function saveConversation(messages, rating){
+  var conversations = JSON.parse(localStorage.getItem('novatell_conversations') || '[]');
+  var id = 'NT' + Date.now().toString().slice(-6);
+  var now = new Date().toLocaleString('fr-FR');
+  conversations.unshift({ id: id, date: now, messages: messages, rating: rating || null, fiche: null });
+  // Keep only last 50 conversations
+  if(conversations.length > 50) conversations = conversations.slice(0, 50);
+  localStorage.setItem('novatell_conversations', JSON.stringify(conversations));
 }
 
 </script>
