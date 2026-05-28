@@ -622,6 +622,19 @@ footer{
 .sum-modal-close{background:transparent;border:1px solid rgba(255,255,255,0.15);color:#94A3B8;font-family:inherit;font-size:13px;padding:11px 20px;border-radius:9px;cursor:pointer;transition:all 0.2s}
 .sum-modal-close:hover{border-color:#E8192C;color:#E8192C}
 
+
+.voice-toggle{
+  display:flex;align-items:center;gap:8px;
+  background:transparent;border:1px solid rgba(255,255,255,0.08);
+  color:#94A3B8;font-family:inherit;font-size:12px;
+  padding:6px 14px;border-radius:20px;cursor:pointer;transition:all 0.2s;
+}
+.voice-toggle:hover{border-color:rgba(0,245,255,0.3);color:#00F5FF}
+.voice-toggle.on{border-color:#00F5FF;color:#00F5FF;background:rgba(0,245,255,0.08)}
+.voice-dot{width:7px;height:7px;border-radius:50%;background:#94A3B8;transition:all 0.2s}
+.voice-toggle.on .voice-dot{background:#00F5FF;box-shadow:0 0 6px #00F5FF;animation:vp 1.5s ease-in-out infinite}
+@keyframes vp{0%,100%{opacity:1}50%{opacity:0.4}}
+
 </style>
 </head>
 <body>
@@ -1003,6 +1016,10 @@ footer{
       <div class="mic-row">
         <button class="mic-b" id="micB" onclick="tMic()">🎙️</button>
         <label class="aud-lbl"><input type="file" style="display:none" accept="audio/*" onchange="hAud(event)"/>📎 Audio</label>
+        <button class="voice-toggle" id="voiceToggle" onclick="toggleVoice()">
+          <span class="voice-dot"></span>
+          <span id="voiceLabel">Voix OFF</span>
+        </button>
         <span class="vst" id="vst">🔴 En cours...</span>
       </div>
       <div style="padding:0 16px 16px">
@@ -1202,6 +1219,7 @@ async function cSend(override) {
     const reply = data.content?.[0]?.text || "Je suis désolé, une erreur est survenue. Veuillez réessayer.";
     chatHistory.push({role:'assistant',content:reply});
     cAddMsg('nova', reply);
+    speak(reply);
   } catch(e) {
     cRemoveTyping();
     cAddMsg('nova','Je suis désolé, une erreur de connexion est survenue. Veuillez réessayer.');
@@ -1283,6 +1301,56 @@ function cpSumModal(){
   navigator.clipboard.writeText(document.getElementById('sumModalB').textContent).then(function(){
     var b=document.querySelector('.sum-modal-copy');b.textContent='✅ Copié !';setTimeout(function(){b.textContent='📋 Copier la fiche';},2000);
   });
+}
+
+
+// ── VOICE OUTPUT ──
+var voiceOn = false;
+var currentUtterance = null;
+
+function toggleVoice(){
+  voiceOn = !voiceOn;
+  var btn = document.getElementById('voiceToggle');
+  var lbl = document.getElementById('voiceLabel');
+  if(voiceOn){
+    btn.classList.add('on');
+    lbl.textContent = 'Voix ON';
+    // Test voice
+    speak('Bonjour, la voix de NOVA est activée.');
+  } else {
+    btn.classList.remove('on');
+    lbl.textContent = 'Voix OFF';
+    if(currentUtterance){
+      window.speechSynthesis.cancel();
+    }
+  }
+}
+
+function speak(text){
+  if(!voiceOn) return;
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'fr-FR';
+  u.rate = 1.0;
+  u.pitch = 1.0;
+  u.volume = 1.0;
+
+  // Try to find a French voice
+  var voices = window.speechSynthesis.getVoices();
+  var frVoice = voices.find(function(v){ return v.lang.startsWith('fr') && v.name.toLowerCase().includes('female'); })
+             || voices.find(function(v){ return v.lang.startsWith('fr'); });
+  if(frVoice) u.voice = frVoice;
+
+  currentUtterance = u;
+  window.speechSynthesis.speak(u);
+}
+
+// Load voices when ready
+if(window.speechSynthesis){
+  window.speechSynthesis.onvoiceschanged = function(){
+    window.speechSynthesis.getVoices();
+  };
 }
 
 </script>
