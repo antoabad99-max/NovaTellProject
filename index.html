@@ -1191,11 +1191,11 @@ function hAud(e){
   e.target.value='';
 }
 async function genSum(){
-  if(!history||history.length<2){alert('Commencez d abord une conversation avec NOVA.');return;}
+  var conv=chatHistory||ch2||[];if(conv.length<2){alert('Commencez d abord une conversation avec NOVA.');return;}
   document.getElementById('sumP').classList.add('open');
   document.getElementById('sumB').textContent='Génération en cours...';
   try{
-    var msgs=history.concat([{role:'user',content:'Génère une fiche dossier client structurée pour cette conversation. Inclus : Motif du contact, Problème décrit, Actions effectuées, Statut (Résolu/En cours/Escaladé), Ticket créé (Oui/Non), Geste commercial (Oui/Non), Prochaine action, Satisfaction estimée.'}]);
+    var msgs=conv.concat([{role:'user',content:'Génère une fiche dossier client structurée pour cette conversation. Inclus : Motif du contact, Problème décrit, Actions effectuées, Statut (Résolu/En cours/Escaladé), Ticket créé (Oui/Non), Geste commercial (Oui/Non), Prochaine action, Satisfaction estimée.'}]);
     var r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-opus-4-5',max_tokens:500,system:'Tu génères des fiches dossier client professionnelles pour un opérateur télécom. Sois concis.',messages:msgs})});
     var d=await r.json();
     document.getElementById('sumB').textContent=d.content&&d.content[0]?d.content[0].text:'Erreur.';
