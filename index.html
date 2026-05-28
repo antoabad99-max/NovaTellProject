@@ -594,6 +594,34 @@ footer{
 .vst{font-size:11px;color:#E8192C;display:none}
 .vst.on{display:inline}
 
+
+.sum-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sum-actions{display:flex;gap:6px}
+.sum-expand{background:transparent;border:1px solid rgba(0,245,255,0.3);color:#00F5FF;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;transition:all 0.2s}
+.sum-expand:hover{background:rgba(0,245,255,0.1)}
+.sum-close{background:transparent;border:1px solid rgba(232,25,44,0.3);color:#E8192C;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;transition:all 0.2s}
+.sum-close:hover{background:rgba(232,25,44,0.1)}
+
+/* Modal plein écran */
+.sum-modal{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;padding:20px;
+}
+.sum-modal.open{display:flex}
+.sum-modal-box{
+  background:#0A0F1E;border:1px solid rgba(0,245,255,0.2);
+  border-radius:16px;padding:28px;max-width:700px;width:100%;
+  max-height:90vh;overflow-y:auto;position:relative;
+}
+.sum-modal-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#00F5FF;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.sum-modal-body{font-size:14px;color:#94A3B8;line-height:1.9;white-space:pre-wrap}
+.sum-modal-footer{display:flex;gap:10px;margin-top:20px}
+.sum-modal-copy{flex:1;background:#E8192C;color:white;border:none;font-family:inherit;font-size:13px;font-weight:600;padding:11px;border-radius:9px;cursor:pointer;transition:all 0.2s}
+.sum-modal-copy:hover{background:#c4111f}
+.sum-modal-close{background:transparent;border:1px solid rgba(255,255,255,0.15);color:#94A3B8;font-family:inherit;font-size:13px;padding:11px 20px;border-radius:9px;cursor:pointer;transition:all 0.2s}
+.sum-modal-close:hover{border-color:#E8192C;color:#E8192C}
+
 </style>
 </head>
 <body>
@@ -980,9 +1008,30 @@ footer{
       <div style="padding:0 16px 16px">
         <button class="sum-btn" onclick="genSum()">📋 Générer la fiche dossier</button>
         <div class="sum-panel" id="sumP">
-          <div class="sum-title">📁 Fiche Dossier — NovaTel</div>
+          <div class="sum-header">
+            <div class="sum-title">📁 Fiche Dossier — NovaTel</div>
+            <div class="sum-actions">
+              <button class="sum-expand" onclick="expandSum()" title="Agrandir">⛶ Agrandir</button>
+              <button class="sum-close" onclick="closeSum()" title="Fermer">✕ Fermer</button>
+            </div>
+          </div>
           <div class="sum-body" id="sumB">Chargement...</div>
           <button class="sum-copy" onclick="cpSum()">📋 Copier la fiche</button>
+        </div>
+
+        <!-- Modal plein écran -->
+        <div class="sum-modal" id="sumModal" onclick="closeSumModal(event)">
+          <div class="sum-modal-box">
+            <div class="sum-modal-title">
+              📁 Fiche Dossier Client — NovaTel
+              <button onclick="closeSumModal()" style="background:transparent;border:none;color:#94A3B8;font-size:20px;cursor:pointer">✕</button>
+            </div>
+            <div class="sum-modal-body" id="sumModalB"></div>
+            <div class="sum-modal-footer">
+              <button class="sum-modal-copy" onclick="cpSumModal()">📋 Copier la fiche</button>
+              <button class="sum-modal-close" onclick="closeSumModal()">Fermer</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1205,7 +1254,25 @@ async function genSum(){
 }
 function cpSum(){
   navigator.clipboard.writeText(document.getElementById('sumB').textContent).then(function(){
-    var b=document.querySelector('.sum-copy');b.textContent='Copié !';setTimeout(function(){b.textContent='📋 Copier la fiche';},2000);
+    var b=document.querySelector('.sum-copy');b.textContent='✅ Copié !';setTimeout(function(){b.textContent='📋 Copier la fiche';},2000);
+  });
+}
+function closeSum(){
+  document.getElementById('sumP').classList.remove('open');
+}
+function expandSum(){
+  var txt=document.getElementById('sumB').textContent;
+  document.getElementById('sumModalB').textContent=txt;
+  document.getElementById('sumModal').classList.add('open');
+}
+function closeSumModal(e){
+  if(!e||e.target===document.getElementById('sumModal')||e.target.tagName==='BUTTON'){
+    document.getElementById('sumModal').classList.remove('open');
+  }
+}
+function cpSumModal(){
+  navigator.clipboard.writeText(document.getElementById('sumModalB').textContent).then(function(){
+    var b=document.querySelector('.sum-modal-copy');b.textContent='✅ Copié !';setTimeout(function(){b.textContent='📋 Copier la fiche';},2000);
   });
 }
 
