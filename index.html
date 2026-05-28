@@ -1012,11 +1012,13 @@ footer{
             <div class="sum-title">📁 Fiche Dossier — NovaTel</div>
             <div class="sum-actions">
               <button class="sum-expand" onclick="expandSum()" title="Agrandir">⛶ Agrandir</button>
-              <button class="sum-close" onclick="closeSum()" title="Fermer">✕ Fermer</button>
+              <button class="sum-expand" id="minBtn" onclick="toggleMin()" title="Réduire">— Réduire</button>
             </div>
           </div>
-          <div class="sum-body" id="sumB">Chargement...</div>
-          <button class="sum-copy" onclick="cpSum()">📋 Copier la fiche</button>
+          <div id="sumContent">
+            <div class="sum-body" id="sumB">Chargement...</div>
+            <button class="sum-copy" onclick="cpSum()">📋 Copier la fiche</button>
+          </div>
         </div>
 
         <!-- Modal plein écran -->
@@ -1257,8 +1259,16 @@ function cpSum(){
     var b=document.querySelector('.sum-copy');b.textContent='✅ Copié !';setTimeout(function(){b.textContent='📋 Copier la fiche';},2000);
   });
 }
-function closeSum(){
-  document.getElementById('sumP').classList.remove('open');
+function toggleMin(){
+  var c=document.getElementById('sumContent');
+  var b=document.getElementById('minBtn');
+  if(c.style.display==='none'){
+    c.style.display='block';
+    b.textContent='— Réduire';
+  } else {
+    c.style.display='none';
+    b.textContent='□ Agrandir';
+  }
 }
 function expandSum(){
   var txt=document.getElementById('sumB').textContent;
