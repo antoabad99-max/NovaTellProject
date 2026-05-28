@@ -1163,27 +1163,29 @@ async function cSend(override) {
 
 function tMic(){
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){alert('Utilisez Chrome pour la reconnaissance vocale.');return;}
-  var r=new SR();r.lang='fr-FR';r.continuous=false;r.interimResults=false;
-  document.getElementById('micB').classList.add('rec');
-  document.getElementById('micB').textContent='⏹️';
-  document.getElementById('vst').classList.add('on');
+  if(!SR){alert('La reconnaissance vocale nécessite Chrome ou Edge.');return;}
+  var r=new SR();
+  r.lang='fr-FR';r.continuous=false;r.interimResults=false;r.maxAlternatives=1;
+  var mb=document.getElementById('micB');
+  var vs=document.getElementById('vst');
+  mb.classList.add('rec');mb.textContent='⏹️';
+  vs.textContent='🔴 Parlez maintenant...';vs.classList.add('on');
   r.onresult=function(e){
     var t=e.results[0][0].transcript;
-    document.getElementById('micB').classList.remove('rec');
-    document.getElementById('micB').textContent='🎙️';
-    document.getElementById('vst').classList.remove('on');
-    var inp=document.getElementById('userInput');
+    mb.classList.remove('rec');mb.textContent='🎙️';vs.classList.remove('on');
+    var inp=document.getElementById('chatInput');
     inp.value=t;inp.style.height='auto';inp.style.height=inp.scrollHeight+'px';
-    sendMessage();
+    setTimeout(function(){cSend();},300);
   };
-  r.onerror=function(){
-    document.getElementById('micB').classList.remove('rec');
-    document.getElementById('micB').textContent='🎙️';
-    document.getElementById('vst').classList.remove('on');
-    alert('Erreur micro.');
+  r.onspeechend=function(){r.stop();};
+  r.onerror=function(ev){
+    mb.classList.remove('rec');mb.textContent='🎙️';vs.classList.remove('on');
+    if(ev.error==='not-allowed'){alert('Accès micro refusé. Autorisez le micro dans la barre d adresse.');}
+    else if(ev.error==='no-speech'){alert('Aucune voix détectée. Parlez plus fort et réessayez.');}
+    else{alert('Erreur micro. Utilisez Chrome ou Edge.');}
   };
-  r.start();
+  r.onend=function(){mb.classList.remove('rec');mb.textContent='🎙️';vs.classList.remove('on');};
+  try{r.start();}catch(ex){mb.classList.remove('rec');mb.textContent='🎙️';vs.classList.remove('on');alert('Impossible de démarrer le micro.');}
 }
 function hAud(e){
   var f=e.target.files[0];if(!f)return;
