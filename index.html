@@ -579,23 +579,21 @@ footer{
   footer{flex-direction:column;text-align:center}
 }
 
-.summary-btn{width:100%;background:transparent;border:1px solid rgba(0,245,255,0.25);color:#00F5FF;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;padding:9px;border-radius:9px;cursor:pointer;transition:all 0.2s;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:7px}
-.summary-btn:hover{background:rgba(0,245,255,0.08)}
-.summary-panel{background:#111827;border:1px solid rgba(0,245,255,0.15);border-radius:12px;padding:16px;margin-top:10px;display:none}
-.summary-panel.open{display:block}
-.summary-title{font-size:12px;font-weight:700;color:#00F5FF;margin-bottom:10px}
-.summary-body{font-size:12px;color:#94A3B8;line-height:1.8;white-space:pre-wrap}
-.summary-copy{width:100%;background:#E8192C;color:white;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;padding:8px;border-radius:8px;cursor:pointer;margin-top:10px;transition:all 0.2s}
-.summary-copy:hover{background:#c4111f}
-.voice-row{display:flex;align-items:center;gap:8px;padding:6px 14px 10px}
-.mic-btn{width:34px;height:34px;background:transparent;border:1px solid rgba(232,25,44,0.3);border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
-.mic-btn:hover{background:rgba(232,25,44,0.1);border-color:#E8192C}
-.mic-btn.rec{background:#E8192C;border-color:#E8192C;animation:rp 1s infinite}
-@keyframes rp{0%,100%{box-shadow:0 0 0 0 rgba(232,25,44,0.4)}50%{box-shadow:0 0 0 7px rgba(232,25,44,0)}}
-.audio-lbl{display:flex;align-items:center;gap:5px;font-size:11px;color:#94A3B8;cursor:pointer;padding:5px 10px;border:1px solid rgba(255,255,255,0.08);border-radius:8px;transition:all 0.2s;white-space:nowrap}
-.audio-lbl:hover{border-color:#E8192C;color:#E8192C}
-.vstatus{font-size:11px;color:#E8192C;display:none}
-.vstatus.on{display:block}
+.sum-btn{width:100%;background:transparent;border:1px solid rgba(0,245,255,0.25);color:#00F5FF;font-family:inherit;font-size:12px;font-weight:500;padding:9px;border-radius:9px;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:7px}
+.sum-btn:hover{background:rgba(0,245,255,0.08)}
+.sum-panel{background:#111827;border:1px solid rgba(0,245,255,0.15);border-radius:12px;padding:16px;margin-top:10px;display:none}
+.sum-panel.open{display:block}
+.sum-title{font-size:12px;font-weight:700;color:#00F5FF;margin-bottom:10px}
+.sum-body{font-size:12px;color:#94A3B8;line-height:1.8;white-space:pre-wrap}
+.sum-copy{width:100%;background:#E8192C;color:white;border:none;font-family:inherit;font-size:12px;font-weight:600;padding:8px;border-radius:8px;cursor:pointer;margin-top:10px}
+.mic-row{display:flex;align-items:center;gap:8px;padding:6px 14px 8px}
+.mic-b{width:34px;height:34px;background:transparent;border:1px solid rgba(232,25,44,0.3);border-radius:50%;cursor:pointer;font-size:15px;transition:all 0.2s;flex-shrink:0}
+.mic-b:hover,.mic-b.rec{background:#E8192C;border-color:#E8192C}
+.aud-lbl{font-size:11px;color:#94A3B8;cursor:pointer;padding:5px 10px;border:1px solid rgba(255,255,255,0.08);border-radius:8px;transition:all 0.2s}
+.aud-lbl:hover{border-color:#E8192C;color:#E8192C}
+.vst{font-size:11px;color:#E8192C;display:none}
+.vst.on{display:inline}
+
 </style>
 </head>
 <body>
@@ -1128,7 +1126,7 @@ async function cSend(override) {
   try {
     const res = await fetch('/api/chat',{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key': 'REMOVED'},
+      headers:{'Content-Type':'application/json','x-api-key': ''},
       body:JSON.stringify({
         model:'claude-opus-4-5',
         max_tokens:1000,
@@ -1150,65 +1148,52 @@ async function cSend(override) {
   document.getElementById('chatSend').disabled=false;
 }
 
-// ── SUMMARY ──
-async function genSum(){
-  if(ch2.length<2){alert('Commencez d'abord une conversation avec NOVA.');return;}
-  document.getElementById('sumPanel').classList.add('open');
-  document.getElementById('sumBody').textContent='⏳ Génération en cours...';
-  try{
-    const msgs=[...ch2,{role:'user',content:'Génère une fiche dossier client structurée pour cette conversation. Inclus : Date et heure, Motif du contact, Problème décrit, Actions effectuées par NOVA, Statut (Résolu/En cours/Escaladé), Ticket créé (Oui/Non), Geste commercial (Oui/Non + détail), Prochaine action requise, Satisfaction estimée (Bon/Neutre/Insatisfait). Sois concis et professionnel.'}];
-    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-opus-4-5',max_tokens:600,system:'Tu génères des fiches dossier client professionnelles et concises pour un opérateur télécom.',messages:msgs})});
-    const d=await r.json();
-    document.getElementById('sumBody').textContent=d.content?.[0]?.text||'Erreur.';
-  }catch(e){document.getElementById('sumBody').textContent='Erreur de génération.';}
+function tMic(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Utilisez Chrome pour la reconnaissance vocale.');return;}
+  var r=new SR();r.lang='fr-FR';r.continuous=false;r.interimResults=false;
+  document.getElementById('micB').classList.add('rec');
+  document.getElementById('micB').textContent='⏹️';
+  document.getElementById('vst').classList.add('on');
+  r.onresult=function(e){
+    var t=e.results[0][0].transcript;
+    document.getElementById('micB').classList.remove('rec');
+    document.getElementById('micB').textContent='🎙️';
+    document.getElementById('vst').classList.remove('on');
+    var inp=document.getElementById('userInput');
+    inp.value=t;inp.style.height='auto';inp.style.height=inp.scrollHeight+'px';
+    sendMessage();
+  };
+  r.onerror=function(){
+    document.getElementById('micB').classList.remove('rec');
+    document.getElementById('micB').textContent='🎙️';
+    document.getElementById('vst').classList.remove('on');
+    alert('Erreur micro.');
+  };
+  r.start();
 }
-function copySum(){
-  navigator.clipboard.writeText(document.getElementById('sumBody').textContent).then(()=>{
-    const b=document.querySelector('.summary-copy');b.textContent='✅ Copié!';setTimeout(()=>b.textContent='📋 Copier',2000);
+function hAud(e){
+  var f=e.target.files[0];if(!f)return;
+  alert('Pour les fichiers audio, utilisez le bouton micro et parlez directement.');
+  e.target.value='';
+}
+async function genSum(){
+  if(!history||history.length<2){alert('Commencez d abord une conversation avec NOVA.');return;}
+  document.getElementById('sumP').classList.add('open');
+  document.getElementById('sumB').textContent='Génération en cours...';
+  try{
+    var msgs=history.concat([{role:'user',content:'Génère une fiche dossier client structurée pour cette conversation. Inclus : Motif du contact, Problème décrit, Actions effectuées, Statut (Résolu/En cours/Escaladé), Ticket créé (Oui/Non), Geste commercial (Oui/Non), Prochaine action, Satisfaction estimée.'}]);
+    var r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-opus-4-5',max_tokens:500,system:'Tu génères des fiches dossier client professionnelles pour un opérateur télécom. Sois concis.',messages:msgs})});
+    var d=await r.json();
+    document.getElementById('sumB').textContent=d.content&&d.content[0]?d.content[0].text:'Erreur.';
+  }catch(ex){document.getElementById('sumB').textContent='Erreur de génération.';}
+}
+function cpSum(){
+  navigator.clipboard.writeText(document.getElementById('sumB').textContent).then(function(){
+    var b=document.querySelector('.sum-copy');b.textContent='Copié !';setTimeout(function(){b.textContent='📋 Copier la fiche';},2000);
   });
 }
 
-// ── VOICE ──
-let mRec=null,aChunks=[],isRec=false;
-function tMic(){isRec?stopRec():startRec();}
-async function startRec(){
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    mRec=new MediaRecorder(stream);aChunks=[];
-    mRec.ondataavailable=e=>aChunks.push(e.data);
-    mRec.onstop=async()=>{
-      const blob=new Blob(aChunks,{type:'audio/webm'});
-      stream.getTracks().forEach(t=>t.stop());
-      useSpeech();
-    };
-    mRec.start();isRec=true;
-    document.getElementById('micBtn').classList.add('rec');
-    document.getElementById('micBtn').textContent='⏹️';
-    document.getElementById('vstatus').classList.add('on');
-  }catch(e){alert('Accès micro refusé. Autorisez le micro dans votre navigateur.');}
-}
-function stopRec(){
-  if(mRec&&isRec){mRec.stop();isRec=false;document.getElementById('micBtn').classList.remove('rec');document.getElementById('micBtn').textContent='🎙️';document.getElementById('vstatus').classList.remove('on');}
-}
-function useSpeech(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){alert('Reconnaissance vocale non supportée. Utilisez Chrome.');return;}
-  const r=new SR();r.lang='fr-FR';r.continuous=false;r.interimResults=false;
-  r.onresult=e=>{const t=e.results[0][0].transcript;const inp=document.getElementById('cta');inp.value=t;inp.style.height='auto';inp.style.height=inp.scrollHeight+'px';cs();};
-  r.onerror=()=>alert('Erreur de reconnaissance vocale.');
-  r.start();
-}
-function hAudio(e){
-  const f=e.target.files[0];if(!f)return;
-  document.getElementById('vstatus').textContent='⏳ Transcription...';
-  document.getElementById('vstatus').classList.add('on');
-  useSpeech();
-  document.getElementById('vstatus').classList.remove('on');
-  document.getElementById('vstatus').textContent='🔴 Enregistrement...';
-  e.target.value='';
-}
 </script>
 </body>
 </html>
-
-
