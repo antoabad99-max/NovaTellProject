@@ -1492,18 +1492,8 @@ function submitRating(){
 // Detect end of conversation keywords
 function checkForGoodbye(text){
   var goodbyeWords = [
-    'bonne journée','bonne soirée','bonne nuit','au revoir',
-    'à bientôt','à très bientôt','à bientôt chez novatell',
-    "n'hésitez pas",'n hésitez pas','nhésitez pas',
-    'prenez soin','à votre service','bonne continuation',
-    'avec plaisir','ravi de vous','problème résolu',
-    'connexion rétablie','ticket créé','ticket enregistré',
-    'nous contacter','recontacter','cordialement',
-    'belle journée','excellente journée','passez une bonne',
-    'merci de votre confiance','merci pour votre confiance',
-    'toute l équipe','toute notre équipe','restons disponibles',
-    'nous restons','à votre disposition','bonne fin de journée',
-    'à votre écoute','bien cordialement','bien à vous'
+    'bonne journée !','bonne soirée !','bonne nuit !',
+    'à bientôt !','à très bientôt !','au revoir !'
   ];
   var lower = text.toLowerCase();
   return goodbyeWords.some(function(w){ return lower.includes(w); });
