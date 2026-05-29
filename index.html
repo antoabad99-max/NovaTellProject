@@ -1162,9 +1162,29 @@ footer{
         <div id="mgrSelectedConv" style="font-size:12px;color:var(--grey);margin-bottom:10px"></div>
         <button class="mgr-gen-btn" onclick="mgrGenFiche()">📋 Générer la fiche dossier</button>
         <div class="mgr-fiche" id="mgrFiche">
-          <div class="mgr-fiche-title">📁 Fiche Dossier Client — NovaTel</div>
-          <div class="mgr-fiche-body" id="mgrFicheBody">Génération en cours...</div>
-          <button class="mgr-fiche-copy" onclick="mgrCopyFiche()">📋 Copier</button>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div class="mgr-fiche-title" style="margin-bottom:0">📁 Fiche Dossier Client — NovaTel</div>
+            <button id="mgrMinBtn" onclick="mgrToggleMin()" style="background:transparent;border:1px solid rgba(139,92,246,0.3);color:#8B5CF6;font-family:inherit;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer">— Réduire</button>
+          </div>
+          <div id="mgrFicheContent">
+            <div class="mgr-fiche-body" id="mgrFicheBody">Génération en cours...</div>
+            <button class="mgr-fiche-copy" onclick="mgrCopyFiche()">📋 Copier</button>
+          </div>
+        </div>
+
+        <!-- Modal plein écran -->
+        <div id="mgrModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px" onclick="mgrCloseModal(event)">
+          <div style="background:#0A0F1E;border:1px solid rgba(139,92,246,0.3);border-radius:16px;padding:28px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+              <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#8B5CF6">📁 Fiche Dossier Client — NovaTel</div>
+              <button onclick="mgrCloseModal()" style="background:transparent;border:none;color:#94A3B8;font-size:20px;cursor:pointer">✕</button>
+            </div>
+            <div id="mgrModalBody" style="font-size:14px;color:#94A3B8;line-height:1.9;white-space:pre-wrap"></div>
+            <div style="display:flex;gap:10px;margin-top:20px">
+              <button onclick="mgrCopyModal()" style="flex:1;background:#8B5CF6;color:white;border:none;font-family:inherit;font-size:13px;font-weight:600;padding:11px;border-radius:9px;cursor:pointer">📋 Copier</button>
+              <button onclick="mgrCloseModal()" style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:#94A3B8;font-family:inherit;font-size:13px;padding:11px 20px;border-radius:9px;cursor:pointer">Fermer</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1769,6 +1789,9 @@ async function mgrGenFiche(){
     var d = await r.json();
     var fiche = d.content && d.content[0] ? d.content[0].text : 'Erreur de génération.';
     document.getElementById('mgrFicheBody').textContent = fiche;
+    document.getElementById('mgrModalBody').textContent = fiche;
+    document.getElementById('mgrFicheContent').style.display = 'block';
+    document.getElementById('mgrMinBtn').textContent = '— Réduire';
 
     // Save fiche to Supabase
     mgrConversations[mgrSelectedIndex].fiche = fiche;
@@ -1804,6 +1827,29 @@ async function saveConversation(messages, rating){
   } catch(e) {
     console.error('Erreur sauvegarde:', e);
   }
+}
+
+
+function mgrToggleMin(){
+  var c = document.getElementById('mgrFicheContent');
+  var b = document.getElementById('mgrMinBtn');
+  if(c.style.display === 'none'){
+    c.style.display = 'block';
+    b.textContent = '— Réduire';
+  } else {
+    c.style.display = 'none';
+    b.textContent = '□ Agrandir';
+  }
+}
+function mgrCloseModal(e){
+  if(!e || e.target === document.getElementById('mgrModal') || e.target.tagName === 'BUTTON'){
+    document.getElementById('mgrModal').style.display = 'none';
+  }
+}
+function mgrCopyModal(){
+  navigator.clipboard.writeText(document.getElementById('mgrModalBody').textContent).then(function(){
+    alert('Fiche copiée !');
+  });
 }
 
 </script>
