@@ -1686,12 +1686,17 @@ function mgrLogout(){
   document.getElementById('mgrPass').value = '';
 }
 
-function mgrLoadConversations(){
-  // Load from localStorage
-  var saved = localStorage.getItem('novatell_conversations');
-  mgrConversations = saved ? JSON.parse(saved) : [];
-  mgrRenderConversations();
-  mgrUpdateStats();
+async function mgrLoadConversations(){
+  try {
+    var r = await fetch('/api/get-conversations');
+    var data = await r.json();
+    mgrConversations = Array.isArray(data) ? data : [];
+    mgrRenderConversations();
+    mgrUpdateStats();
+  } catch(e) {
+    mgrConversations = [];
+    mgrRenderConversations();
+  }
 }
 
 function mgrRenderConversations(){
@@ -1705,10 +1710,12 @@ function mgrRenderConversations(){
 
   list.innerHTML = mgrConversations.map(function(conv, i){
     var stars = conv.rating ? '⭐'.repeat(conv.rating) : '—';
-    var preview = conv.messages && conv.messages.length > 0 ? conv.messages[0].content.substring(0, 60) + '...' : 'Conversation vide';
+    var msgs = conv.messages || [];
+    var preview = msgs.length > 0 ? msgs[0].content.substring(0, 60) + '...' : 'Conversation vide';
+    var hasFiche = conv.fiche ? '📋 ' : '';
     return '<div class="mgr-conv-item" onclick="mgrSelectConv(' + i + ')">' +
       '<div class="mgr-conv-header">' +
-      '<span class="mgr-conv-id">#' + conv.id + '</span>' +
+      '<span class="mgr-conv-id">' + hasFiche + '#' + conv.conv_id + '</span>' +
       '<span class="mgr-conv-stars">' + stars + '</span>' +
       '<span class="mgr-conv-time">' + conv.date + '</span>' +
       '</div>' +
@@ -1728,8 +1735,14 @@ function mgrSelectConv(i){
   mgrSelectedIndex = i;
   var conv = mgrConversations[i];
   document.getElementById('mgrFicheSection').style.display = 'block';
-  document.getElementById('mgrSelectedConv').textContent = 'Conversation #' + conv.id + ' — ' + conv.date + ' — ' + conv.messages.length + ' messages';
-  document.getElementById('mgrFiche').classList.remove('open');
+  var msgs = conv.messages || [];
+  document.getElementById('mgrSelectedConv').textContent = 'Conversation #' + conv.conv_id + ' — ' + conv.date + ' — ' + msgs.length + ' messages';
+  if(conv.fiche){
+    document.getElementById('mgrFiche').classList.add('open');
+    document.getElementById('mgrFicheBody').textContent = conv.fiche;
+  } else {
+    document.getElementById('mgrFiche').classList.remove('open');
+  }
   document.querySelectorAll('.mgr-conv-item').forEach(function(el, idx){
     el.style.borderColor = idx === i ? 'rgba(139,92,246,0.5)' : '';
   });
@@ -1757,9 +1770,13 @@ async function mgrGenFiche(){
     var fiche = d.content && d.content[0] ? d.content[0].text : 'Erreur de génération.';
     document.getElementById('mgrFicheBody').textContent = fiche;
 
-    // Save fiche to conversation
+    // Save fiche to Supabase
     mgrConversations[mgrSelectedIndex].fiche = fiche;
-    localStorage.setItem('novatell_conversations', JSON.stringify(mgrConversations));
+    await fetch('/api/update-fiche', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ id: mgrConversations[mgrSelectedIndex].id, fiche: fiche })
+    });
     document.getElementById('mgrFiches').textContent = mgrConversations.filter(function(c){ return c.fiche; }).length;
   } catch(e) {
     document.getElementById('mgrFicheBody').textContent = 'Erreur de génération.';
@@ -1775,14 +1792,18 @@ function mgrCopyFiche(){
 }
 
 // Save conversation to localStorage when it ends
-function saveConversation(messages, rating){
-  var conversations = JSON.parse(localStorage.getItem('novatell_conversations') || '[]');
+async function saveConversation(messages, rating){
   var id = 'NT' + Date.now().toString().slice(-6);
   var now = new Date().toLocaleString('fr-FR');
-  conversations.unshift({ id: id, date: now, messages: messages, rating: rating || null, fiche: null });
-  // Keep only last 50 conversations
-  if(conversations.length > 50) conversations = conversations.slice(0, 50);
-  localStorage.setItem('novatell_conversations', JSON.stringify(conversations));
+  try {
+    await fetch('/api/save-conversation', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ conv_id: id, date: now, messages: messages, rating: rating || null })
+    });
+  } catch(e) {
+    console.error('Erreur sauvegarde:', e);
+  }
 }
 
 </script>
