@@ -2,7 +2,6 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -17,48 +16,32 @@ export default async function handler(req, res) {
   console.log('Calling:', formatted);
 
   try {
-    const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
-    const twilioNumber = process.env.TWILIO_PHONE_NUMBER;
-
-    console.log('AccountSID:', accountSid ? 'OK' : 'MISSING');
-    console.log('AuthToken:', authToken ? 'OK' : 'MISSING');
-    console.log('TwilioNumber:', twilioNumber);
-
+    const TELNYX_API_KEY = process.env.TELNYX_API_KEY;
+    const TELNYX_NUMBER = process.env.TELNYX_PHONE_NUMBER;
     const baseUrl = 'https://novatell-site.vercel.app';
 
-    const body = new URLSearchParams({
-      To: formatted,
-      From: twilioNumber,
-      Url: `${baseUrl}/api/voice`,
-      Method: 'GET'
+    const response = await fetch('https://api.telnyx.com/v2/calls', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${TELNYX_API_KEY}`
+      },
+      body: JSON.stringify({
+        connection_id: process.env.TELNYX_CONNECTION_ID,
+        to: formatted,
+        from: TELNYX_NUMBER,
+        webhook_url: `${baseUrl}/api/voice`,
+        webhook_url_method: 'POST'
+      })
     });
 
-    console.log('Request body:', body.toString());
-
-    const response = await fetch(
-      `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Calls.json`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Basic ' + Buffer.from(`${accountSid}:${authToken}`).toString('base64'),
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body
-      }
-    );
-
     const data = await response.json();
-    console.log('Twilio response:', JSON.stringify(data));
+    console.log('Telnyx response:', JSON.stringify(data));
 
-    if (data.sid) {
-      return res.status(200).json({ success: true, callSid: data.sid });
+    if (data.data && data.data.call_leg_id) {
+      return res.status(200).json({ success: true, callId: data.data.call_leg_id });
     } else {
-      return res.status(400).json({ 
-        error: data.message || 'Erreur Twilio',
-        code: data.code,
-        details: data
-      });
+      return res.status(400).json({ error: data.errors?.[0]?.detail || 'Erreur Telnyx', details: data });
     }
   } catch (error) {
     console.error('Error:', error.message);
