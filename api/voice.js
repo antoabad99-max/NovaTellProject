@@ -1,7 +1,6 @@
 export default async function handler(req, res) {
-  res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
@@ -9,64 +8,64 @@ export default async function handler(req, res) {
   const eventType = event?.data?.event_type;
   const callControlId = event?.data?.payload?.call_control_id;
 
-  console.log('Event type:', eventType);
-  console.log('Call control ID:', callControlId);
+  console.log('Event:', eventType, 'CallID:', callControlId);
+
+  // Respond immediately to avoid timeout
+  res.status(200).json({ received: true });
+
+  if (!callControlId || !eventType) return;
 
   const TELNYX_API_KEY = process.env.TELNYX_API_KEY;
 
-  async function telnyxAction(action, body = {}) {
-    const r = await fetch(`https://api.telnyx.com/v2/calls/${callControlId}/actions/${action}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${TELNYX_API_KEY}`
-      },
-      body: JSON.stringify(body)
-    });
-    const data = await r.json();
-    console.log(`${action} response:`, JSON.stringify(data));
-    return data;
+  async function act(action, body = {}) {
+    try {
+      const r = await fetch(`https://api.telnyx.com/v2/calls/${callControlId}/actions/${action}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${TELNYX_API_KEY}`
+        },
+        body: JSON.stringify(body)
+      });
+      const d = await r.json();
+      console.log(`${action}:`, JSON.stringify(d).substring(0, 100));
+    } catch(e) {
+      console.error(`${action} error:`, e.message);
+    }
   }
 
-  try {
-    // Incoming call - answer it
-    if (eventType === 'call.initiated') {
-      await telnyxAction('answer');
-    }
+  if (eventType === 'call.initiated') {
+    await act('answer');
+  }
 
-    // Call answered - play welcome message
-    if (eventType === 'call.answered') {
-      await telnyxAction('speak', {
-        payload: "Bonjour, vous avez contacté NovaTel. Je suis NOVA, votre assistant intelligent. Comment puis-je vous aider aujourd'hui ?",
-        voice: 'female',
+  if (eventType === 'call.answered') {
+    await act('speak', {
+      payload: "Bonjour, vous avez contacté NovaTel. Je suis NOVA, votre assistant. Comment puis-je vous aider ?",
+      voice: 'female',
+      language: 'fr-FR'
+    });
+  }
+
+  if (eventType === 'call.speak.ended') {
+    await act('gather', {
+      minimum_digits: 0,
+      timeout_millis: 8000,
+      speech: {
+        model: 'enhanced',
         language: 'fr-FR',
-        command_id: 'welcome'
-      });
-    }
+        profanity_filter: false,
+        endpointing_timeout_millis: 1500
+      }
+    });
+  }
 
-    // Welcome message finished - listen for speech
-    if (eventType === 'call.speak.ended') {
-      await telnyxAction('gather', {
-        minimum_digits: 0,
-        timeout_millis: 8000,
-        speech: {
-          model: 'enhanced',
-          language: 'fr-FR',
-          profanity_filter: false,
-          endpointing_timeout_millis: 2000
-        }
-      });
-    }
+  if (eventType === 'call.gather.ended') {
+    const transcript = event?.data?.payload?.speech?.transcript || '';
+    console.log('Transcript:', transcript);
 
-    // Speech received - ask Claude and respond
-    if (eventType === 'call.gather.ended') {
-      const speechResult = event?.data?.payload?.speech?.transcript || '';
-      const reason = event?.data?.payload?.reason;
-      console.log('Speech:', speechResult, 'Reason:', reason);
-
-      if (speechResult && speechResult.trim()) {
-        // Get Claude response
-        const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+    if (transcript.trim()) {
+      try {
+        const cr = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -75,46 +74,24 @@ export default async function handler(req, res) {
           },
           body: JSON.stringify({
             model: 'claude-opus-4-5',
-            max_tokens: 150,
-            system: `Tu es NOVA, l'assistant vocal de NovaTel. Tu réponds à des appels téléphoniques entrants.
-Règles : réponses courtes (2 phrases max), claires et naturelles à l'oral. Tu vouvoies toujours.
-Si le problème est résolu ou le client dit au revoir, dis "Bonne journée !" et raccroche.
-Ne mentionne pas que tu es une IA sauf si demandé.`,
-            messages: [{ role: 'user', content: speechResult }]
+            max_tokens: 120,
+            system: `Tu es NOVA, l'assistant vocal de NovaTel. Réponds en 1-2 phrases courtes, claires, naturelles à l'oral. Vouvoie toujours. Si le client dit au revoir ou merci, dis "Bonne journée !" et termine.`,
+            messages: [{ role: 'user', content: transcript }]
           })
         });
+        const cd = await cr.json();
+        const reply = cd.content?.[0]?.text || "Je suis désolé, pouvez-vous répéter ?";
+        console.log('Reply:', reply);
 
-        const claudeData = await claudeRes.json();
-        const reply = claudeData.content?.[0]?.text || "Je suis désolé, pouvez-vous répéter ?";
-        console.log('NOVA reply:', reply);
-
-        const goodbyeWords = ['bonne journée', 'au revoir', 'bonsoir', 'à bientôt'];
-        const isGoodbye = goodbyeWords.some(w => reply.toLowerCase().includes(w));
-
-        await telnyxAction('speak', {
-          payload: reply,
-          voice: 'female',
-          language: 'fr-FR'
-        });
-
-        if (isGoodbye) {
-          setTimeout(async () => {
-            await telnyxAction('hangup');
-          }, 6000);
-        }
-      } else {
-        // No speech - prompt again
-        await telnyxAction('speak', {
-          payload: "Je n'ai pas entendu votre réponse. Pouvez-vous répéter s'il vous plaît ?",
-          voice: 'female',
-          language: 'fr-FR'
-        });
+        const bye = ['bonne journée', 'au revoir', 'bonsoir', 'à bientôt'].some(w => reply.toLowerCase().includes(w));
+        await act('speak', { payload: reply, voice: 'female', language: 'fr-FR' });
+        if (bye) setTimeout(() => act('hangup'), 5000);
+      } catch(e) {
+        console.error('Claude error:', e.message);
+        await act('speak', { payload: "Je suis désolé, une erreur est survenue. Rappellez-nous au 3266. Bonne journée !", voice: 'female', language: 'fr-FR' });
       }
+    } else {
+      await act('speak', { payload: "Je n'ai pas entendu votre réponse. Pouvez-vous répéter ?", voice: 'female', language: 'fr-FR' });
     }
-
-    return res.status(200).json({ received: true });
-  } catch (error) {
-    console.error('Error:', error.message);
-    return res.status(500).json({ error: error.message });
   }
 }
