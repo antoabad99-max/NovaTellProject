@@ -14,34 +14,44 @@ export default async function handler(req, res) {
   if (!formatted.startsWith('+')) formatted = '+33' + formatted;
 
   console.log('Calling:', formatted);
+  console.log('From:', process.env.TELNYX_PHONE_NUMBER);
+  console.log('Connection ID:', process.env.TELNYX_CONNECTION_ID);
 
   try {
     const TELNYX_API_KEY = process.env.TELNYX_API_KEY;
-    const TELNYX_NUMBER = process.env.TELNYX_PHONE_NUMBER;
     const baseUrl = 'https://novatell-site.vercel.app';
+
+    const body = {
+      to: formatted,
+      from: process.env.TELNYX_PHONE_NUMBER,
+      connection_id: process.env.TELNYX_CONNECTION_ID,
+      webhook_url: `${baseUrl}/api/voice`,
+      webhook_url_method: 'POST',
+      timeout_secs: 30
+    };
+
+    console.log('Request body:', JSON.stringify(body));
 
     const response = await fetch('https://api.telnyx.com/v2/calls', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${TELNYX_API_KEY}`
+        'Authorization': `Bearer ${TELNYX_API_KEY}`,
+        'Accept': 'application/json'
       },
-      body: JSON.stringify({
-        connection_id: process.env.TELNYX_CONNECTION_ID,
-        to: formatted,
-        from: TELNYX_NUMBER,
-        webhook_url: `${baseUrl}/api/voice`,
-        webhook_url_method: 'POST'
-      })
+      body: JSON.stringify(body)
     });
 
     const data = await response.json();
+    console.log('Telnyx response status:', response.status);
     console.log('Telnyx response:', JSON.stringify(data));
 
-    if (data.data && data.data.call_leg_id) {
+    if (response.ok && data.data) {
       return res.status(200).json({ success: true, callId: data.data.call_leg_id });
     } else {
-      return res.status(400).json({ error: data.errors?.[0]?.detail || 'Erreur Telnyx', details: data });
+      const errorDetail = data.errors?.map(e => e.detail).join(', ') || JSON.stringify(data);
+      console.error('Telnyx error:', errorDetail);
+      return res.status(400).json({ error: errorDetail });
     }
   } catch (error) {
     console.error('Error:', error.message);
